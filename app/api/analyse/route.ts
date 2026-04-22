@@ -58,7 +58,7 @@ For each action; what to do, who owns it, effort level, and impact on TAT and ef
 The three actions must be sequenced in the correct implementation order; the action that unblocks or enables the next one comes first. After listing all three actions add one line stating why this sequence matters and what breaks if the order is reversed.
 
 PROCESS HEALTH SCORE
-Four dimensions; Automation Maturity, Handoff Quality, Accountability Clarity, Improvement Readiness. Score out of 10 for each with one sentence of justification. Benchmark the score against what good looks like for a company of their size, stage and geography; not against a generic global standard. Overall score as the average.
+Four dimensions; Automation Maturity, Handoff Quality, Accountability Clarity, Improvement Readiness. Score out of 10 for each with one sentence of justification. Benchmarked against best practices for operations at this scale and stage. Overall score as the average.
 
 TONE AND STYLE RULES FOR BOTH LAYERS:
 Never use generic consulting language like "leverage synergies" or "drive alignment."

@@ -922,11 +922,11 @@ footer { border-top: 1px solid var(--border); padding: 32px 0; }
   border-top: 1px solid var(--border);
 }
 .footer-credit-link {
-  color: var(--fg-dim);
+  color: var(--accent);
   text-decoration: none;
   transition: opacity 0.15s;
 }
-.footer-credit-link:hover { opacity: 0.85; color: var(--fg-mid); }
+.footer-credit-link:hover { opacity: 0.85; color: var(--accent); }
 
 /* ── Error ── */
 .inline-error {
