@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ops Process Analyser — Process Intelligence Suite</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f0f0f;
+    --bg-1: #141414;
+    --bg-2: #1a1a1a;
+    --fg: #f0ede6;
+    --fg-dim: #7a7670;
+    --fg-mid: #b0ada6;
+    --accent: #c8f135;
+    --accent-dim: #8aaa24;
+    --border: #252525;
+    --border-bright: #333;
+    --font-display: 'Instrument Serif', Georgia, serif;
+    --font-body: 'Inter', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent); color: #0f0f0f; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border-bright); }
+
+  /* Layout */
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
+
+  /* Nav */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    border-bottom: 1px solid var(--border);
+    background: rgba(15,15,15,0.96);
+    backdrop-filter: blur(8px);
+  }
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+  .nav-left { display: flex; align-items: center; gap: 0; }
+  .nav-logo {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding-right: 16px;
+    border-right: 1px solid var(--border-bright);
+    margin-right: 16px;
+  }
+  .nav-module {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--fg-dim);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .nav-module span { color: var(--fg-mid); }
+  .nav-cta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #0f0f0f;
+    background: var(--accent);
+    padding: 8px 18px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .nav-cta:hover { opacity: 0.85; }
+
+  /* Hero */
+  .hero {
+    padding: 160px 0 120px;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: var(--accent);
+  }
+  .hero-headline {
+    font-family: var(--font-display);
+    font-size: clamp(52px, 6.5vw, 88px);
+    font-weight: 400;
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    color: var(--fg);
+    max-width: 820px;
+    margin-bottom: 36px;
+  }
+  .hero-headline em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .hero-sub {
+    font-size: 18px;
+    font-weight: 300;
+    line-height: 1.65;
+    color: var(--fg-mid);
+    max-width: 560px;
+    margin-bottom: 56px;
+  }
+  .hero-sub strong { color: var(--fg); font-weight: 500; }
+  .hero-actions { display: flex; align-items: center; gap: 24px; }
+  .btn-primary {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #0f0f0f;
+    background: var(--accent);
+    padding: 14px 32px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+  .hero-stat-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-top: 80px;
+    border-top: 1px solid var(--border);
+    padding-top: 40px;
+  }
+  .hero-stat {
+    flex: 1;
+    padding-right: 40px;
+    border-right: 1px solid var(--border);
+    margin-right: 40px;
+  }
+  .hero-stat:last-child { border-right: none; margin-right: 0; padding-right: 0; }
+  .hero-stat-num {
+    font-family: var(--font-mono);
+    font-size: 36px;
+    font-weight: 600;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .hero-stat-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+  }
+
+  /* Section utility */
+  .section { padding: 100px 0; border-bottom: 1px solid var(--border); }
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+    margin-bottom: 48px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+    max-width: 80px;
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 3.5vw, 52px);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+  .section-title em { font-style: italic; color: var(--accent); }
+
+  /* How it works */
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border: 1px solid var(--border);
+    margin-top: 64px;
+  }
+  .step {
+    padding: 48px 40px;
+    border-right: 1px solid var(--border);
+    position: relative;
+  }
+  .step:last-child { border-right: none; }
+  .step-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    margin-bottom: 24px;
+    display: block;
+  }
+  .step-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+  .step-body {
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--fg-mid);
+  }
+  .step-connector {
+    position: absolute;
+    right: -13px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 26px;
+    height: 26px;
+    background: var(--bg);
+    border: 1px solid var(--border-bright);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--fg-dim);
+  }
+
+  /* What you get */
+  .output-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    margin-top: 64px;
+    border: 1px solid var(--border);
+  }
+  .output-panel {
+    padding: 56px 48px;
+    border-right: 1px solid var(--border);
+  }
+  .output-panel:last-child { border-right: none; }
+  .output-layer {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+    padding: 5px 10px;
+    border: 1px solid var(--accent);
+    display: inline-block;
+  }
+  .output-title {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 1.1;
+    margin-bottom: 20px;
+  }
+  .output-desc {
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.75;
+    color: var(--fg-mid);
+    margin-bottom: 28px;
+  }
+  .output-features { list-style: none; }
+  .output-features li {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--fg-mid);
+    letter-spacing: 0.04em;
+    padding: 10px 0;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .output-features li::before {
+    content: '→';
+    color: var(--accent);
+    font-size: 10px;
+  }
+
+  /* Tool section */
+  #tool {
+    padding: 100px 0 120px;
+    background: var(--bg);
+  }
+  .tool-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 48px;
+  }
+  .tool-header-left { flex: 1; }
+  .tool-title {
+    font-family: var(--font-display);
+    font-size: clamp(32px, 3vw, 48px);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+  .tool-sub {
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--fg-mid);
+    line-height: 1.6;
+  }
+  .usage-counter {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--fg-dim);
+    letter-spacing: 0.08em;
+    text-align: right;
+    flex-shrink: 0;
+    padding-top: 6px;
+  }
+  .usage-pips { display: flex; gap: 6px; justify-content: flex-end; margin-top: 8px; }
+  .pip {
+    width: 20px;
+    height: 6px;
+    background: var(--border-bright);
+    transition: background 0.3s;
+  }
+  .pip.used { background: var(--accent); }
+  .pip.locked { background: var(--border); opacity: 0.4; }
+
+  /* Input area */
+  .input-area {
+    border: 1px solid var(--border-bright);
+    background: var(--bg-1);
+    margin-bottom: 4px;
+    transition: border-color 0.2s;
+    position: relative;
+  }
+  .input-area:focus-within { border-color: var(--accent); }
+  .input-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+    padding: 16px 20px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .char-count {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--fg-dim);
+    letter-spacing: 0.06em;
+  }
+  textarea {
+    width: 100%;
+    min-height: 200px;
+    background: transparent;
+    border: none;
+    outline: none;
+    resize: vertical;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.7;
+    color: var(--fg);
+    padding: 16px 20px 20px;
+    caret-color: var(--accent);
+  }
+  textarea::placeholder { color: var(--fg-dim); opacity: 0.6; }
+
+  .tool-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 16px;
+  }
+  .tool-hint {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--fg-dim);
+    letter-spacing: 0.06em;
+  }
+  .btn-run {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #0f0f0f;
+    background: var(--accent);
+    padding: 14px 40px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .btn-run:hover:not(:disabled) { opacity: 0.88; }
+  .btn-run:active:not(:disabled) { transform: scale(0.98); }
+  .btn-run:disabled {
+    background: var(--border-bright);
+    color: var(--fg-dim);
+    cursor: not-allowed;
+  }
+
+  /* Loading */
+  .loading-bar {
+    height: 2px;
+    background: var(--border);
+    margin-top: 24px;
+    overflow: hidden;
+    position: relative;
+  }
+  .loading-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+  .loading-status {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dot-anim { animation: blink 1s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+  /* Output panels */
+  .output-section {
+    margin-top: 48px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--border);
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .output-section.visible { opacity: 1; transform: translateY(0); }
+
+  .result-panel {
+    padding: 0;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+  }
+  .result-panel:last-child { border-right: none; }
+  .result-panel-header {
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-1);
+  }
+  .result-panel-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .result-panel-label::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    display: block;
+  }
+  .result-panel-tag {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+    border: 1px solid var(--border-bright);
+    padding: 3px 8px;
+  }
+  .result-panel-body { padding: 28px; flex: 1; }
+
+  /* Executive summary */
+  .exec-summary {
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--fg-mid);
+  }
+  .exec-summary strong { color: var(--fg); font-weight: 500; }
+
+  /* Score bar */
+  .score-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .score-num {
+    font-family: var(--font-mono);
+    font-size: 48px;
+    font-weight: 600;
+    color: var(--accent);
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .score-denom {
+    font-family: var(--font-mono);
+    font-size: 20px;
+    color: var(--fg-dim);
+    align-self: flex-end;
+    margin-bottom: 6px;
+    margin-left: -8px;
+  }
+  .score-meta { flex: 1; }
+  .score-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+    margin-bottom: 8px;
+  }
+  .score-bar-track {
+    height: 3px;
+    background: var(--border);
+    width: 100%;
+  }
+  .score-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 1s ease;
+  }
+
+  /* Breakdown */
+  .breakdown-row {
+    display: flex;
+    gap: 0;
+    margin-bottom: 20px;
+  }
+  .breakdown-item {
+    flex: 1;
+    padding: 16px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    margin-right: 8px;
+  }
+  .breakdown-item:last-child { margin-right: 0; }
+  .breakdown-pct {
+    font-family: var(--font-mono);
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--fg);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .breakdown-pct.accent { color: var(--accent); }
+  .breakdown-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+  }
+
+  /* Diagnosis list */
+  .diag-block { margin-bottom: 24px; }
+  .diag-block-title {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .diag-list { list-style: none; }
+  .diag-list li {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--fg-mid);
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .diag-list li:last-child { border-bottom: none; }
+  .diag-list li .marker {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--accent);
+    flex-shrink: 0;
+    margin-top: 2px;
+    letter-spacing: 0.06em;
+  }
+
+  /* Actions */
+  .action-item {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .action-item:first-child { padding-top: 0; }
+  .action-item:last-child { border-bottom: none; }
+  .action-num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    color: #0f0f0f;
+    background: var(--accent);
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    letter-spacing: 0;
+  }
+  .action-text {
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--fg-mid);
+  }
+  .action-text strong { color: var(--fg); font-weight: 500; font-size: 13px; }
+
+  /* Login gate */
+  .login-gate {
+    border: 1px solid var(--border-bright);
+    background: var(--bg-1);
+    padding: 40px;
+    margin-top: 24px;
+    text-align: center;
+  }
+  .login-gate-icon {
+    font-family: var(--font-mono);
+    font-size: 24px;
+    color: var(--fg-dim);
+    margin-bottom: 16px;
+  }
+  .login-gate-title {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 8px;
+  }
+  .login-gate-sub {
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--fg-mid);
+    margin-bottom: 24px;
+  }
+  .btn-login {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #0f0f0f;
+    background: var(--accent);
+    padding: 12px 28px;
+    border: none;
+    cursor: pointer;
+  }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 0;
+  }
+  .footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .footer-logo {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--fg-dim);
+    letter-spacing: 0.1em;
+  }
+  .footer-logo span { color: var(--accent); }
+  .footer-copy {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--fg-dim);
+    letter-spacing: 0.08em;
+  }
+
+  /* Tweaks panel */
+  .tweaks-panel {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 260px;
+    background: var(--bg-1);
+    border: 1px solid var(--border-bright);
+    padding: 20px;
+    z-index: 200;
+    display: none;
+  }
+  .tweaks-panel.open { display: block; }
+  .tweaks-title {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .tweak-row { margin-bottom: 14px; }
+  .tweak-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+    margin-bottom: 6px;
+    display: block;
+  }
+  .tweak-select, .tweak-input {
+    width: 100%;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    color: var(--fg);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 6px 10px;
+    outline: none;
+    cursor: pointer;
+  }
+  .tweak-select:focus, .tweak-input:focus { border-color: var(--accent); }
+
+  @media (max-width: 768px) {
+    .container { padding: 0 20px; }
+    .steps-grid { grid-template-columns: 1fr; }
+    .step { border-right: none; border-bottom: 1px solid var(--border); }
+    .step-connector { display: none; }
+    .output-grid { grid-template-columns: 1fr; }
+    .output-panel { border-right: none; border-bottom: 1px solid var(--border); }
+    .output-section { grid-template-columns: 1fr; }
+    .result-panel { border-right: none; border-bottom: 1px solid var(--border); }
+    .hero-stat-row { flex-direction: column; gap: 24px; }
+    .hero-stat { border-right: none; padding-right: 0; margin-right: 0; border-bottom: 1px solid var(--border); padding-bottom: 24px; }
+    .hero-stat:last-child { border-bottom: none; }
+    .tool-header { flex-direction: column; gap: 20px; }
+    .usage-counter { text-align: left; }
+    .usage-pips { justify-content: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-left">
+      <div class="nav-logo">PIS / V1.0</div>
+      <div class="nav-module"><span>Module 01 —</span> Ops Process Analyser</div>
+    </div>
+    <button class="nav-cta" onclick="document.getElementById('tool').scrollIntoView({behavior:'smooth'})">Run Diagnosis ↓</button>
+  </div>
+</nav>
+
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "accentColor": "#c8f135",
+  "displayFont": "Georgia",
+  "density": "comfortable"
+}/*EDITMODE-END*/;
+
+function useTweaks() {
+  const [tweaks, setTweaks] = useState(TWEAK_DEFAULTS);
+  useEffect(() => {
+    document.documentElement.style.setProperty('--accent', tweaks.accentColor);
+    document.documentElement.style.setProperty('--font-display', `'${tweaks.displayFont}', Georgia, serif`);
+    const bodyPad = tweaks.density === 'compact' ? '70px' : tweaks.density === 'spacious' ? '130px' : '100px';
+    document.querySelectorAll('.section, #tool').forEach(el => {
+      el.style.paddingTop = bodyPad;
+      el.style.paddingBottom = bodyPad;
+    });
+  }, [tweaks]);
+  return [tweaks, setTweaks];
+}
+
+function Pip({ used, locked }) {
+  return <div className={`pip ${used ? 'used' : locked ? 'locked' : ''}`} />;
+}
+
+function LoadingState({ progress, status }) {
+  return (
+    <div>
+      <div className="loading-bar">
+        <div className="loading-bar-fill" style={{ width: `${progress}%` }} />
+      </div>
+      <div className="loading-status">
+        <span className="dot-anim">●</span>
+        {status}
+      </div>
+    </div>
+  );
+}
+
+function ExecutiveSummary({ data }) {
+  return (
+    <div className="result-panel">
+      <div className="result-panel-header">
+        <div className="result-panel-label">Layer 1 — Executive Summary</div>
+        <div className="result-panel-tag">~150 words</div>
+      </div>
+      <div className="result-panel-body">
+        <div className="score-row">
+          <div className="score-num">{data.healthScore}</div>
+          <div className="score-denom">/10</div>
+          <div className="score-meta">
+            <div className="score-label">Process Health Score</div>
+            <div className="score-bar-track">
+              <div className="score-bar-fill" style={{ width: `${data.healthScore * 10}%` }} />
+            </div>
+          </div>
+        </div>
+        <div className="breakdown-row">
+          <div className="breakdown-item">
+            <div className="breakdown-pct accent">{data.manualPct}%</div>
+            <div className="breakdown-label">Manual</div>
+          </div>
+          <div className="breakdown-item">
+            <div className="breakdown-pct">{data.automatedPct}%</div>
+            <div className="breakdown-label">Automated</div>
+          </div>
+          <div className="breakdown-item">
+            <div className="breakdown-pct">{data.handoffCount}</div>
+            <div className="breakdown-label">Handoffs</div>
+          </div>
+        </div>
+        <div
+          className="exec-summary"
+          dangerouslySetInnerHTML={{ __html: data.executiveSummary }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function FullDiagnosis({ data }) {
+  return (
+    <div className="result-panel">
+      <div className="result-panel-header">
+        <div className="result-panel-label">Layer 2 — Full Diagnosis</div>
+        <div className="result-panel-tag">For your team</div>
+      </div>
+      <div className="result-panel-body">
+        <div className="diag-block">
+          <div className="diag-block-title">Top Handoff Risks</div>
+          <ul className="diag-list">
+            {data.handoffRisks.map((r, i) => (
+              <li key={i}>
+                <span className="marker">RISK-{String(i+1).padStart(2,'0')}</span>
+                {r}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="diag-block">
+          <div className="diag-block-title">Root Causes</div>
+          <ul className="diag-list">
+            {data.rootCauses.map((c, i) => (
+              <li key={i}>
+                <span className="marker">ROOT-{String(i+1).padStart(2,'0')}</span>
+                {c}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="diag-block">
+          <div className="diag-block-title">Sequenced Actions</div>
+          <div>
+            {data.actions.map((a, i) => (
+              <div className="action-item" key={i}>
+                <div className="action-num">{i+1}</div>
+                <div className="action-text" dangerouslySetInnerHTML={{ __html: a }} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LoginGate() {
+  return (
+    <div className="login-gate">
+      <div className="login-gate-icon">⟨ 🔒 ⟩</div>
+      <div className="login-gate-title">Free diagnoses used.</div>
+      <div className="login-gate-sub">You've run 2 free analyses. Create a free account to continue — your results are saved automatically.</div>
+      <button className="btn-login">Create Free Account</button>
+    </div>
+  );
+}
+
+function TweaksPanel({ tweaks, setTweaks, open }) {
+  return (
+    <div className={`tweaks-panel ${open ? 'open' : ''}`}>
+      <div className="tweaks-title">Tweaks</div>
+      <div className="tweak-row">
+        <label className="tweak-label">Accent Color</label>
+        <input
+          type="color"
+          className="tweak-input"
+          value={tweaks.accentColor}
+          onChange={e => setTweaks(t => ({ ...t, accentColor: e.target.value }))}
+          style={{ height: 32, padding: '2px 4px', cursor: 'pointer' }}
+        />
+      </div>
+      <div className="tweak-row">
+        <label className="tweak-label">Display Font</label>
+        <select
+          className="tweak-select"
+          value={tweaks.displayFont}
+          onChange={e => setTweaks(t => ({ ...t, displayFont: e.target.value }))}
+        >
+          <option value="Instrument Serif">Instrument Serif</option>
+          <option value="Georgia">Georgia</option>
+          <option value="Inter">Inter</option>
+          <option value="JetBrains Mono">JetBrains Mono</option>
+        </select>
+      </div>
+      <div className="tweak-row">
+        <label className="tweak-label">Density</label>
+        <select
+          className="tweak-select"
+          value={tweaks.density}
+          onChange={e => setTweaks(t => ({ ...t, density: e.target.value }))}
+        >
+          <option value="compact">Compact</option>
+          <option value="comfortable">Comfortable</option>
+          <option value="spacious">Spacious</option>
+        </select>
+      </div>
+    </div>
+  );
+}
+
+const DIAGNOSIS_PROMPT = (process) => `You are an expert business process analyst. Analyse the following business process description and return a structured JSON diagnosis.
+
+Process:
+"""
+${process}
+"""
+
+Return ONLY valid JSON (no markdown, no extra text) in this exact format:
+{
+  "healthScore": <number 1-10, one decimal place>,
+  "manualPct": <integer 0-100>,
+  "automatedPct": <integer 0-100, should sum to 100 with manualPct>,
+  "handoffCount": <integer, count of role/system handoffs>,
+  "executiveSummary": "<150-word executive summary as HTML with <strong> tags for key terms. Mention the health score, manual %, and top risk.>",
+  "handoffRisks": [
+    "<risk 1, one sentence>",
+    "<risk 2, one sentence>",
+    "<risk 3, one sentence>"
+  ],
+  "rootCauses": [
+    "<root cause 1, one sentence>",
+    "<root cause 2, one sentence>",
+    "<root cause 3, one sentence>"
+  ],
+  "actions": [
+    "<action 1 as HTML: <strong>Short title.</strong> Explanation of what to do and why. This is the immediate action.>",
+    "<action 2 as HTML: <strong>Short title.</strong> Medium-term fix.>",
+    "<action 3 as HTML: <strong>Short title.</strong> Strategic improvement.>"
+  ]
+}
+
+Be rigorous, specific to the process described, and clinically direct. Do not be generic.`;
+
+function App() {
+  const [processText, setProcessText] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [loadProgress, setLoadProgress] = useState(0);
+  const [loadStatus, setLoadStatus] = useState('');
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
+  const [usageCount, setUsageCount] = useState(() => parseInt(localStorage.getItem('opa_usage') || '0'));
+  const [showGate, setShowGate] = useState(false);
+  const [tweaksOpen, setTweaksOpen] = useState(false);
+  const [tweaks, setTweaks] = useTweaks();
+  const outputRef = useRef(null);
+
+  useEffect(() => {
+    window.addEventListener('message', e => {
+      if (e.data?.type === '__activate_edit_mode') setTweaksOpen(true);
+      if (e.data?.type === '__deactivate_edit_mode') setTweaksOpen(false);
+    });
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+  }, []);
+
+  useEffect(() => {
+    if (tweaksOpen) {
+      window.parent.postMessage({
+        type: '__edit_mode_set_keys',
+        edits: tweaks
+      }, '*');
+    }
+  }, [tweaks, tweaksOpen]);
+
+  const animateProgress = useCallback((stages) => {
+    let i = 0;
+    const tick = () => {
+      if (i < stages.length) {
+        setLoadProgress(stages[i].pct);
+        setLoadStatus(stages[i].label);
+        i++;
+        setTimeout(tick, stages[i-1].delay || 800);
+      }
+    };
+    tick();
+  }, []);
+
+  const runDiagnosis = async () => {
+    if (!processText.trim() || processText.trim().length < 30) {
+      setError('Please paste a more detailed process description (at least 30 characters).');
+      return;
+    }
+
+    if (usageCount >= 2) {
+      setShowGate(true);
+      return;
+    }
+
+    setError(null);
+    setResult(null);
+    setLoading(true);
+    setLoadProgress(0);
+
+    animateProgress([
+      { pct: 15, label: 'Parsing process structure...', delay: 600 },
+      { pct: 35, label: 'Mapping handoff points...', delay: 700 },
+      { pct: 55, label: 'Calculating automation ratio...', delay: 600 },
+      { pct: 72, label: 'Identifying root causes...', delay: 700 },
+      { pct: 88, label: 'Generating diagnosis...', delay: 500 },
+    ]);
+
+    try {
+      const raw = await window.claude.complete(DIAGNOSIS_PROMPT(processText));
+      
+      // Extract JSON from response
+      const jsonMatch = raw.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error('Invalid response format');
+      const data = JSON.parse(jsonMatch[0]);
+      
+      setLoadProgress(100);
+      setLoadStatus('Diagnosis complete.');
+      
+      setTimeout(() => {
+        setLoading(false);
+        setResult(data);
+        const newCount = usageCount + 1;
+        setUsageCount(newCount);
+        localStorage.setItem('opa_usage', String(newCount));
+        setTimeout(() => {
+          if (outputRef.current) {
+            const top = outputRef.current.getBoundingClientRect().top + window.scrollY - 80;
+            window.scrollTo({ top, behavior: 'smooth' });
+          }
+        }, 200);
+      }, 600);
+
+    } catch (err) {
+      setLoading(false);
+      setError('Diagnosis failed. Please try again with a clearer process description.');
+    }
+  };
+
+  const charCount = processText.length;
+
+  return (
+    <>
+      {/* Hero */}
+      <section className="hero" id="hero">
+        <div className="container">
+          <div className="hero-eyebrow">Process Intelligence Suite — Module 01</div>
+          <h1 className="hero-headline">
+            Diagnose the process,<br />
+            not the <em>people.</em>
+          </h1>
+          <p className="hero-sub">
+            Paste any business process and get an instant breakdown of{' '}
+            <strong>what percentage is manual vs automated</strong>, a{' '}
+            <strong>process health score out of 10</strong>, your top handoff risks, root causes,
+            and three sequenced actions to fix it.
+          </p>
+          <div className="hero-actions">
+            <a
+              className="btn-primary"
+              href="#tool"
+              onClick={e => { e.preventDefault(); document.getElementById('tool').scrollIntoView({ behavior: 'smooth' }); }}
+            >
+              Run Your Diagnosis ↓
+            </a>
+          </div>
+          <div className="hero-stat-row">
+            <div className="hero-stat">
+              <div className="hero-stat-num">2</div>
+              <div className="hero-stat-label">Output Layers</div>
+            </div>
+            <div className="hero-stat">
+              <div className="hero-stat-num">150w</div>
+              <div className="hero-stat-label">Executive punch</div>
+            </div>
+            <div className="hero-stat">
+              <div className="hero-stat-num">&lt;60s</div>
+              <div className="hero-stat-label">Time to diagnosis</div>
+            </div>
+            <div className="hero-stat">
+              <div className="hero-stat-num">M01</div>
+              <div className="hero-stat-label">PIS Suite</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How it works */}
+      <section className="section" id="how">
+        <div className="container">
+          <div className="section-label">How it works</div>
+          <h2 className="section-title">Three steps.<br /><em>One clear picture.</em></h2>
+          <div className="steps-grid">
+            <div className="step">
+              <span className="step-num">STEP 01 /</span>
+              <h3 className="step-title">Paste your process</h3>
+              <p className="step-body">
+                Describe any operational flow in plain language. An approval chain, an onboarding sequence, a finance reconciliation loop. No templates. No structured input required. Write it how you'd explain it to a colleague.
+              </p>
+              <div className="step-connector">→</div>
+            </div>
+            <div className="step">
+              <span className="step-num">STEP 02 /</span>
+              <h3 className="step-title">AI maps the structure</h3>
+              <p className="step-body">
+                The engine identifies every handoff, classifies each step as manual or automated, locates failure points, and calculates an objective health score — all without a consultant in the room.
+              </p>
+              <div className="step-connector">→</div>
+            </div>
+            <div className="step">
+              <span className="step-num">STEP 03 /</span>
+              <h3 className="step-title">Act on the diagnosis</h3>
+              <p className="step-body">
+                You receive two outputs: a 150-word executive summary ready to copy into a board deck, and a full team-level diagnosis with ranked root causes and three sequenced actions — ordered by impact and effort.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* What you get */}
+      <section className="section" id="output">
+        <div className="container">
+          <div className="section-label">What you get</div>
+          <h2 className="section-title">Two layers.<br /><em>One truth.</em></h2>
+          <div className="output-grid">
+            <div className="output-panel">
+              <div className="output-layer">Layer 01 — Executive</div>
+              <h3 className="output-title">The 150-word punch.</h3>
+              <p className="output-desc">
+                A crisp, board-ready paragraph your exec can drop directly into a memo, slack update, or quarterly review. No filtering required.
+              </p>
+              <ul className="output-features">
+                <li>Process health score with context</li>
+                <li>Manual vs automated breakdown</li>
+                <li>Single highest-risk handoff, named</li>
+                <li>One-line recommended direction</li>
+              </ul>
+            </div>
+            <div className="output-panel">
+              <div className="output-layer">Layer 02 — Team Diagnosis</div>
+              <h3 className="output-title">The full picture, for the people doing the work.</h3>
+              <p className="output-desc">
+                A structured breakdown your ops lead, process owner, or delivery team can action immediately — without back-and-forth with leadership.
+              </p>
+              <ul className="output-features">
+                <li>Top 3 handoff risks, named and ranked</li>
+                <li>Root cause analysis (not symptom list)</li>
+                <li>3 sequenced actions — by priority</li>
+                <li>Effort vs. impact framing built in</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* THE TOOL */}
+      <section id="tool">
+        <div className="container">
+          <div className="tool-header">
+            <div className="tool-header-left">
+              <div className="section-label" style={{ marginBottom: 16 }}>Module 01 — Run Diagnosis</div>
+              <h2 className="tool-title">Your process.<br /><em>Diagnosed.</em></h2>
+              <p className="tool-sub">
+                Paste any process below — approval flows, onboarding steps, operational sequences. The more detail, the sharper the output.
+              </p>
+            </div>
+            <div className="usage-counter">
+              <div>FREE DIAGNOSES</div>
+              <div className="usage-pips">
+                <Pip used={usageCount >= 1} />
+                <Pip used={usageCount >= 2} />
+                <Pip locked={true} />
+              </div>
+              <div style={{ marginTop: 6, fontSize: 10 }}>
+                {usageCount >= 2 ? 'LIMIT REACHED — LOGIN TO CONTINUE' : `${2 - usageCount} REMAINING`}
+              </div>
+            </div>
+          </div>
+
+          <div className="input-area">
+            <div className="input-label">
+              <span>PROCESS DESCRIPTION</span>
+              <span className="char-count">{charCount} CHARS</span>
+            </div>
+            <textarea
+              value={processText}
+              onChange={e => setProcessText(e.target.value)}
+              placeholder={`Describe your process in plain language. For example:\n\n"When a new client signs, the account manager manually emails the onboarding doc to the client. The client fills it in and emails it back. The ops team then manually enters data into Salesforce, creates a Jira ticket, and notifies the delivery lead via Slack. The delivery lead then schedules a kickoff call using Calendly and emails the invite manually..."`}
+              disabled={loading}
+            />
+          </div>
+
+          {error && (
+            <div style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: 11,
+              color: '#ff5e5e',
+              padding: '10px 0',
+              letterSpacing: '0.06em'
+            }}>
+              ⚠ {error}
+            </div>
+          )}
+
+          <div className="tool-actions">
+            <div className="tool-hint">
+              TIP — Include role names, systems, and decision points for a sharper diagnosis
+            </div>
+            <button
+              className="btn-run"
+              onClick={runDiagnosis}
+              disabled={loading || !processText.trim()}
+            >
+              {loading ? (
+                <>
+                  <span className="dot-anim">◉</span>
+                  Running...
+                </>
+              ) : (
+                <>Run Diagnosis →</>
+              )}
+            </button>
+          </div>
+
+          {loading && (
+            <LoadingState progress={loadProgress} status={loadStatus} />
+          )}
+
+          {showGate && !loading && (
+            <LoginGate />
+          )}
+
+          {result && !loading && (
+            <div
+              ref={outputRef}
+              className="output-section visible"
+            >
+              <ExecutiveSummary data={result} />
+              <FullDiagnosis data={result} />
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer>
+        <div className="container">
+          <div className="footer-inner">
+            <div className="footer-logo">
+              <span>PIS</span> / V1.0 — Process Intelligence Suite
+            </div>
+            <div className="footer-copy">
+              MODULE 01 — OPS PROCESS ANALYSER
+            </div>
+          </div>
+        </div>
+      </footer>
+
+      <TweaksPanel tweaks={tweaks} setTweaks={setTweaks} open={tweaksOpen} />
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
