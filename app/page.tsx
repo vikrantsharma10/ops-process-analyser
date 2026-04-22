@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
-import type { User } from '@supabase/supabase-js';
 
 interface AnalysisResult {
   layer1: string;
@@ -43,7 +42,6 @@ function parseResponse(text: string): AnalysisResult {
 // ── Text helpers ─────────────────────────────────────────────────────────────
 
 function normalizeLayer1(text: string): string {
-  // Force each numbered fix item onto its own line before splitting into blocks
   return text
     .replace(/(Fix these three things:)\s*(\d)/i, '$1\n$2')
     .replace(/(\d\.[^\n]+?[.!?])\s+(\d\.)/g, '$1\n$2');
@@ -85,7 +83,6 @@ function DiagText({ text }: { text: string }) {
     const isSeparator = (l: string) => /^\s*\|[\s\-:|]+\|\s*$/.test(l);
     const dataLines = tableLines.filter(l => !isSeparator(l));
     if (dataLines.length < 2) {
-      // Not a real table — treat as text
       textLines.push(...tableLines);
       tableLines = [];
       return;
@@ -126,11 +123,53 @@ function DiagText({ text }: { text: string }) {
   return <>{result}</>;
 }
 
-// ── Sub-components ────────────────────────────────────────────────────────────
+// ── Copy button ───────────────────────────────────────────────────────────────
 
-function Pip({ used, locked }: { used?: boolean; locked?: boolean }) {
-  return <div className={`pip${used ? ' used' : locked ? ' locked' : ''}`} />;
+function CopyButton({ text, eventType }: { text: string; eventType: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+      void supabase.from('events').insert({ event_type: eventType, user_id: null });
+    } catch (_) {}
+  };
+
+  return (
+    <button className="copy-btn" onClick={handleCopy} title="Copy to clipboard">
+      {copied ? (
+        <span className="copy-confirm">Copied</span>
+      ) : (
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="4" y="4" width="8" height="9" rx="1" stroke="currentColor" strokeWidth="1.2"/>
+          <path d="M4 3V2.5C4 1.67 4.67 1 5.5 1H11.5C12.33 1 13 1.67 13 2.5V9.5C13 10.33 12.33 11 11.5 11H11" stroke="currentColor" strokeWidth="1.2"/>
+        </svg>
+      )}
+    </button>
+  );
 }
+
+// ── Panel footnote ────────────────────────────────────────────────────────────
+
+function PanelFootnote() {
+  return (
+    <div className="panel-footnote">
+      Ops Process Analyser — Built by{' '}
+      <a
+        href="https://www.linkedin.com/in/vikrantsharma10/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="panel-footnote-link"
+      >
+        Vikrant Sharma
+      </a>
+    </div>
+  );
+}
+
+// ── Sub-components ────────────────────────────────────────────────────────────
 
 function LoadingState({ progress, status }: { progress: number; status: string }) {
   return (
@@ -151,7 +190,10 @@ function ExecutiveSummary({ data }: { data: AnalysisResult }) {
     <div className="result-panel">
       <div className="result-panel-header">
         <div className="result-panel-label">Layer 1 — Executive Summary</div>
-        <div className="result-panel-tag">~150 words</div>
+        <div className="result-panel-header-right">
+          <div className="result-panel-tag">~150 words</div>
+          <CopyButton text={data.layer1} eventType="copy_layer1" />
+        </div>
       </div>
       <div className="result-panel-body">
         {data.healthScore !== null && (
@@ -186,6 +228,7 @@ function ExecutiveSummary({ data }: { data: AnalysisResult }) {
           </div>
         )}
         <Layer1Text text={data.layer1} />
+        <PanelFootnote />
       </div>
     </div>
   );
@@ -196,7 +239,10 @@ function FullDiagnosis({ data }: { data: AnalysisResult }) {
     <div className="result-panel">
       <div className="result-panel-header">
         <div className="result-panel-label">Layer 2 — Full Diagnosis</div>
-        <div className="result-panel-tag">For your team</div>
+        <div className="result-panel-header-right">
+          <div className="result-panel-tag">For your team</div>
+          <CopyButton text={data.layer2} eventType="copy_layer2" />
+        </div>
       </div>
       <div className="result-panel-body">
         {data.isDiagnosis ? (
@@ -207,129 +253,7 @@ function FullDiagnosis({ data }: { data: AnalysisResult }) {
             full team diagnosis.
           </div>
         )}
-      </div>
-    </div>
-  );
-}
-
-function LoginModal({
-  onClose,
-  onSuccess,
-}: {
-  onClose: () => void;
-  onSuccess: () => void;
-}) {
-  const [email, setEmail] = useState('');
-  const [token, setToken] = useState('');
-  const [stage, setStage] = useState<'email' | 'verify'>('email');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const sendOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.trim()) return;
-    setLoading(true);
-    setError(null);
-    const { error: err } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
-      options: { shouldCreateUser: true, emailRedirectTo: `${window.location.origin}/` },
-    });
-    setLoading(false);
-    if (err) {
-      setError(err.message);
-    } else {
-      setStage('verify');
-    }
-  };
-
-  const verifyOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!token.trim()) return;
-    setLoading(true);
-    setError(null);
-    const { error: err } = await supabase.auth.verifyOtp({
-      email: email.trim(),
-      token: token.trim(),
-      type: 'email',
-    });
-    setLoading(false);
-    if (err) {
-      setError(err.message);
-    } else {
-      onSuccess();
-    }
-  };
-
-  return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <span className="modal-label">Access Required</span>
-          <button className="modal-close" onClick={onClose}>
-            ×
-          </button>
-        </div>
-        <div className="modal-body">
-          <h2 className="modal-title">
-            {stage === 'email' ? 'Learn in detail about your process.' : 'Check your email.'}
-          </h2>
-          <p className="modal-sub">
-            {stage === 'email'
-              ? 'Create a free account. Your detailed analysis will be emailed to you.'
-              : `We sent a 6-digit code to ${email}. Enter it below to continue.`}
-          </p>
-
-          {stage === 'email' ? (
-            <form onSubmit={sendOtp}>
-              <div className="form-row">
-                <label className="form-label">Email address</label>
-                <input
-                  type="email"
-                  className="form-input"
-                  placeholder="Your email address."
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  autoFocus
-                />
-              </div>
-              <button type="submit" className="btn-modal-submit" disabled={loading}>
-                {loading ? 'Sending...' : 'Continue with email →'}
-              </button>
-              <div className="auth-note">No password required. One-time code sent to your inbox.</div>
-            </form>
-          ) : (
-            <form onSubmit={verifyOtp}>
-              <div className="form-row">
-                <label className="form-label">Verification code</label>
-                <input
-                  type="text"
-                  className="form-input"
-                  placeholder="000000"
-                  value={token}
-                  onChange={(e) => setToken(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                  maxLength={6}
-                  required
-                  autoFocus
-                />
-              </div>
-              <button type="submit" className="btn-modal-submit" disabled={loading || token.length < 6}>
-                {loading ? 'Verifying...' : 'Verify & run diagnosis →'}
-              </button>
-              <div className="auth-note">
-                Wrong email?{' '}
-                <span
-                  style={{ color: 'var(--accent)', cursor: 'pointer' }}
-                  onClick={() => { setStage('email'); setToken(''); setError(null); }}
-                >
-                  Go back
-                </span>
-              </div>
-            </form>
-          )}
-
-          {error && <div className="auth-error">⚠ {error}</div>}
-        </div>
+        <PanelFootnote />
       </div>
     </div>
   );
@@ -344,24 +268,7 @@ export default function Home() {
   const [loadStatus, setLoadStatus] = useState('');
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [usageCount, setUsageCount] = useState(0);
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
   const outputRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    setUsageCount(parseInt(localStorage.getItem('opa_usage') || '0'));
-  }, []);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-    return () => subscription.unsubscribe();
-  }, []);
 
   const animateProgress = useCallback(
     (stages: { pct: number; label: string; delay: number }[]) => {
@@ -385,16 +292,6 @@ export default function Home() {
       return;
     }
 
-    const currentUser = await supabase.auth.getUser().then((r) => r.data.user).catch(() => null);
-
-    // Read fresh from localStorage to avoid stale closure — this is the source of truth
-    const freshUsage = parseInt(localStorage.getItem('opa_usage') || '0');
-
-    if (!currentUser && freshUsage >= 2) {
-      setShowLoginModal(true);
-      return;
-    }
-
     setError(null);
     setResult(null);
     setLoading(true);
@@ -412,10 +309,7 @@ export default function Home() {
       const response = await fetch('/api/analyse', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          input: processText,
-          userId: currentUser?.id ?? null,
-        }),
+        body: JSON.stringify({ input: processText, userId: null }),
       });
 
       const data = await response.json();
@@ -433,25 +327,6 @@ export default function Home() {
         setLoading(false);
         setResult(parsed);
 
-        if (!currentUser) {
-          const newCount = freshUsage + 1;
-          setUsageCount(newCount);
-          localStorage.setItem('opa_usage', String(newCount));
-        }
-
-        // Send email for logged-in users (best-effort)
-        if (currentUser?.email) {
-          fetch('/api/send-email', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              to: currentUser.email,
-              layer1: parsed.layer1,
-              layer2: parsed.layer2,
-            }),
-          }).catch(() => {});
-        }
-
         setTimeout(() => {
           if (outputRef.current) {
             const top =
@@ -466,26 +341,7 @@ export default function Home() {
     }
   }, [processText, animateProgress]);
 
-  const handleLoginSuccess = () => {
-    setShowLoginModal(false);
-    // User is now authenticated; run on next tick so state updates propagate
-    setTimeout(runDiagnosis, 100);
-  };
-
-  const handleUnlockClick = async () => {
-    // Log login_intent event (best-effort)
-    try {
-      await supabase.from('events').insert({
-        event_type: 'login_intent',
-        user_id: user?.id ?? null,
-      });
-    } catch (_) {}
-    setShowLoginModal(true);
-  };
-
   const charCount = processText.length;
-  const isLoggedIn = !!user;
-  const remainingFree = Math.max(0, 2 - usageCount);
 
   return (
     <>
@@ -663,41 +519,6 @@ export default function Home() {
                 sharpest output.
               </p>
             </div>
-
-            <div className="usage-counter">
-              {isLoggedIn ? (
-                <>
-                  <div>LOGGED IN</div>
-                  <div
-                    style={{
-                      marginTop: 8,
-                      fontSize: 10,
-                      color: 'var(--accent)',
-                      letterSpacing: '0.08em',
-                    }}
-                  >
-                    UNLIMITED DIAGNOSES
-                  </div>
-                  <div style={{ marginTop: 4, fontSize: 10, color: 'var(--fg-dim)' }}>
-                    {user?.email?.split('@')[0].slice(0, 16)}
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div>FREE DIAGNOSES</div>
-                  <div className="usage-pips">
-                    <Pip used={usageCount >= 1} />
-                    <Pip used={usageCount >= 2} />
-                    <Pip locked />
-                  </div>
-                  <div style={{ marginTop: 6, fontSize: 10, letterSpacing: '0.06em' }}>
-                    {usageCount >= 2
-                      ? 'LIMIT REACHED — LOGIN TO CONTINUE'
-                      : `${remainingFree} REMAINING`}
-                  </div>
-                </>
-              )}
-            </div>
           </div>
 
           <div className="input-area">
@@ -745,20 +566,10 @@ export default function Home() {
           {loading && <LoadingState progress={loadProgress} status={loadStatus} />}
 
           {!loading && result && (
-            <>
-              <div ref={outputRef} className="output-section visible">
-                <ExecutiveSummary data={result} />
-                <FullDiagnosis data={result} />
-              </div>
-              <div className="trial-cta">
-                <p className="trial-disclaimer">
-                  This is a trial analysis based on the information provided. Log in and answer a few targeted questions to unlock a more precise and detailed diagnosis.
-                </p>
-                <button className="btn-unlock" onClick={handleUnlockClick}>
-                  Unlock Detailed Analysis — Log In
-                </button>
-              </div>
-            </>
+            <div ref={outputRef} className="output-section visible">
+              <ExecutiveSummary data={result} />
+              <FullDiagnosis data={result} />
+            </div>
           )}
         </div>
       </section>
@@ -785,10 +596,6 @@ export default function Home() {
           </div>
         </div>
       </footer>
-
-      {showLoginModal && (
-        <LoginModal onClose={() => setShowLoginModal(false)} onSuccess={handleLoginSuccess} />
-      )}
     </>
   );
 }

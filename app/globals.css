@@ -520,6 +520,43 @@ textarea::placeholder { color: var(--fg-dim); opacity: 0.6; }
   padding: 3px 8px;
 }
 .result-panel-body { padding: 28px; flex: 1; overflow-y: auto; max-height: 640px; }
+.result-panel-header-right { display: flex; align-items: center; gap: 10px; }
+
+/* Copy button */
+.copy-btn {
+  background: none;
+  border: 1px solid var(--border-bright);
+  color: var(--fg-dim);
+  cursor: pointer;
+  padding: 4px 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s, border-color 0.15s;
+  line-height: 1;
+}
+.copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+.copy-confirm {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* Panel footnote */
+.panel-footnote {
+  margin-top: 28px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--fg-dim);
+  opacity: 0.5;
+}
+.panel-footnote-link { color: inherit; text-decoration: underline; }
+.panel-footnote-link:hover { opacity: 1; color: var(--accent); }
 
 /* Score */
 .score-row {
