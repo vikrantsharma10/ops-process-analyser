@@ -123,6 +123,74 @@ function DiagText({ text }: { text: string }) {
   return <>{result}</>;
 }
 
+// ── Example section ───────────────────────────────────────────────────────────
+
+const EXAMPLE_INPUT =
+  'Our procurement team raises a purchase request in a spreadsheet and emails it to the finance manager for approval. Finance manually checks the budget in a separate system and replies by email. If approved, the procurement team emails the vendor to place the order. The vendor confirms by email or WhatsApp. Delivery is tracked manually by calling the vendor. On delivery, the warehouse team updates a shared Google Sheet. Finance then manually reconciles the invoice against the order and processes payment via bank transfer.';
+
+const EXAMPLE_L1: { type: string; text: string }[] = [
+  { type: 'score',   text: 'Overall health: 3/10' },
+  { type: 'body',    text: '78% manual, 22% automated. The core structural problem is the approval and confirmation loop; every handoff between procurement, finance and vendors runs through unstructured email and WhatsApp with no audit trail and no SLA. One delayed reply anywhere in this chain stops the entire flow.' },
+  { type: 'label',   text: 'Fix these three things:' },
+  { type: 'fix',     text: '1. Replace the email approval chain with a structured procurement tool that routes requests, captures approvals and logs decisions automatically.' },
+  { type: 'fix',     text: '2. Connect your inventory and finance systems so budget checks happen in real time without manual cross-referencing.' },
+  { type: 'fix',     text: '3. Set a vendor confirmation SLA and move order tracking to a shared portal so delivery status is visible without phone calls.' },
+  { type: 'closing', text: 'If nothing changes: procurement cycles will continue to run 3–5 days longer than necessary with rising error rates as order volume grows.' },
+];
+
+const EXAMPLE_L2_HEADERS = [
+  'Process Snapshot',
+  'Manual vs Automated Breakdown',
+  'Handoff Risk Map',
+  'Root Cause Diagnosis',
+  'Ownership Matrix',
+  'Top 3 Improvement Actions',
+  'Process Health Score',
+];
+
+function ExampleSection() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="example-wrap">
+      <button className="example-toggle" onClick={() => setOpen((o) => !o)}>
+        {open ? 'Hide example ←' : 'See an example →'}
+      </button>
+      {open && (
+        <div className="example-container">
+          <div className="example-badge">EXAMPLE — READ ONLY</div>
+
+          <div className="example-section-title">INPUT</div>
+          <div className="example-input-box">{EXAMPLE_INPUT}</div>
+
+          <div className="example-section-title">OUTPUT — LAYER 1: EXECUTIVE SUMMARY</div>
+          <div className="example-output-panel">
+            {EXAMPLE_L1.map((line, i) => {
+              if (line.type === 'score')   return <div key={i} className="ex-score">{line.text}</div>;
+              if (line.type === 'label')   return <div key={i} className="ex-fix-label">{line.text}</div>;
+              if (line.type === 'fix')     return <div key={i} className="ex-fix">{line.text}</div>;
+              if (line.type === 'closing') return <div key={i} className="ex-closing">{line.text}</div>;
+              return <div key={i} className="ex-body">{line.text}</div>;
+            })}
+          </div>
+
+          <div className="example-section-title">OUTPUT — LAYER 2: FULL DIAGNOSIS</div>
+          <div className="example-output-panel">
+            <ul className="ex-l2-list">
+              {EXAMPLE_L2_HEADERS.map((h, i) => (
+                <li key={i} className="ex-l2-item">
+                  <span className="ex-l2-icon" aria-hidden>▪</span>
+                  {h}
+                </li>
+              ))}
+            </ul>
+            <p className="ex-l2-note"><em>Full diagnosis appears in your actual analysis.</em></p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Copy button ───────────────────────────────────────────────────────────────
 
 function CopyButton({ text, eventType }: { text: string; eventType: string }) {
@@ -520,6 +588,8 @@ export default function Home() {
               </p>
             </div>
           </div>
+
+          <ExampleSection />
 
           <div className="input-area">
             <div className="input-label">
