@@ -652,16 +652,58 @@ textarea::placeholder { color: var(--fg-dim); opacity: 0.6; }
   margin-bottom: 24px;
 }
 
+/* ── Diagnosis tables ── */
+.diag-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  margin: 12px 0 20px;
+  table-layout: fixed;
+}
+.diag-table th {
+  background: var(--bg-2);
+  color: var(--fg-dim);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: left;
+  padding: 8px 12px;
+  border: 1px solid var(--border-bright);
+  font-size: 10px;
+  word-break: keep-all;
+}
+.diag-table td {
+  color: var(--fg-mid);
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  vertical-align: top;
+  line-height: 1.55;
+  word-break: break-word;
+}
+.diag-table tr:nth-child(even) td { background: var(--bg-1); }
+.diag-table tr:hover td { background: var(--bg-2); }
+
 /* ── Unlock CTA ── */
 .trial-cta {
   margin-top: 0;
   border: 1px solid var(--border);
   border-top: none;
-  padding: 28px;
+  padding: 28px 40px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  gap: 20px;
   background: var(--bg-1);
+}
+.trial-disclaimer {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg);
+  text-align: center;
+  line-height: 1.55;
+  max-width: 640px;
 }
 .btn-unlock {
   font-family: var(--font-mono);

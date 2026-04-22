@@ -40,6 +40,76 @@ function parseResponse(text: string): AnalysisResult {
   return { layer1, layer2, healthScore, manualPct, automatedPct, isDiagnosis: dividerIndex !== -1 };
 }
 
+// ── Text helpers ─────────────────────────────────────────────────────────────
+
+function normalizeLayer1(text: string): string {
+  // Ensure each numbered fix item is on its own line, regardless of how Claude formatted them
+  return text
+    .replace(/(Fix these three things:)\s*(\d)/i, '$1\n$2')
+    .replace(/(\d\.[^\n]+?[.!])\s+(\d\.)/g, '$1\n$2');
+}
+
+function DiagText({ text }: { text: string }) {
+  const lines = text.split('\n');
+  const result: React.ReactNode[] = [];
+  let tableLines: string[] = [];
+  let textLines: string[] = [];
+  let key = 0;
+
+  const flushText = () => {
+    if (textLines.length === 0) return;
+    result.push(
+      <div key={key++} className="diag-text">{textLines.join('\n')}</div>
+    );
+    textLines = [];
+  };
+
+  const flushTable = () => {
+    if (tableLines.length === 0) return;
+    const isSeparator = (l: string) => /^\s*\|[\s\-:|]+\|\s*$/.test(l);
+    const dataLines = tableLines.filter(l => !isSeparator(l));
+    if (dataLines.length < 2) {
+      // Not a real table — treat as text
+      textLines.push(...tableLines);
+      tableLines = [];
+      return;
+    }
+    const parseRow = (line: string) =>
+      line.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map(c => c.trim());
+    const [headerLine, ...bodyLines] = dataLines;
+    const headers = parseRow(headerLine);
+    const rows = bodyLines.map(parseRow);
+    result.push(
+      <table key={key++} className="diag-table">
+        <thead>
+          <tr>{headers.map((h, i) => <th key={i}>{h}</th>)}</tr>
+        </thead>
+        <tbody>
+          {rows.map((row, ri) => (
+            <tr key={ri}>{row.map((cell, ci) => <td key={ci}>{cell}</td>)}</tr>
+          ))}
+        </tbody>
+      </table>
+    );
+    tableLines = [];
+  };
+
+  for (const line of lines) {
+    const isTableLine = /^\s*\|/.test(line) && /\|\s*$/.test(line);
+    if (isTableLine) {
+      flushText();
+      tableLines.push(line);
+    } else {
+      flushTable();
+      textLines.push(line);
+    }
+  }
+  flushText();
+  flushTable();
+
+  return <>{result}</>;
+}
+
 // ── Sub-components ────────────────────────────────────────────────────────────
 
 function Pip({ used, locked }: { used?: boolean; locked?: boolean }) {
@@ -99,7 +169,7 @@ function ExecutiveSummary({ data }: { data: AnalysisResult }) {
             )}
           </div>
         )}
-        <div className="exec-text">{data.layer1}</div>
+        <div className="exec-text">{normalizeLayer1(data.layer1)}</div>
       </div>
     </div>
   );
@@ -114,7 +184,7 @@ function FullDiagnosis({ data }: { data: AnalysisResult }) {
       </div>
       <div className="result-panel-body">
         {data.isDiagnosis ? (
-          <div className="diag-text">{data.layer2}</div>
+          <DiagText text={data.layer2} />
         ) : (
           <div className="exec-text" style={{ opacity: 0.5 }}>
             Add the requested details to your process description above and run again to get the
@@ -185,7 +255,7 @@ function LoginModal({
         </div>
         <div className="modal-body">
           <h2 className="modal-title">
-            {stage === 'email' ? "You've used your 2 free diagnoses." : 'Check your email.'}
+            {stage === 'email' ? 'Learn in detail about your process.' : 'Check your email.'}
           </h2>
           <p className="modal-sub">
             {stage === 'email'
@@ -200,7 +270,7 @@ function LoginModal({
                 <input
                   type="email"
                   className="form-input"
-                  placeholder="you@company.com"
+                  placeholder="Your email address."
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -649,6 +719,9 @@ export default function Home() {
                 <FullDiagnosis data={result} />
               </div>
               <div className="trial-cta">
+                <p className="trial-disclaimer">
+                  This is a trial analysis based on the information provided. Log in and answer a few targeted questions to unlock a more precise and detailed diagnosis.
+                </p>
                 <button className="btn-unlock" onClick={handleUnlockClick}>
                   Unlock Detailed Analysis — Log In
                 </button>

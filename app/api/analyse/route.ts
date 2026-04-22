@@ -93,13 +93,8 @@ export async function POST(request: NextRequest) {
       messages: [{ role: 'user', content: input.trim() }],
     });
 
-    const rawOutput =
+    const output =
       message.content[0].type === 'text' ? message.content[0].text : '';
-
-    const TRIAL_NOTE =
-      '\n\nThis is a trial analysis based on the information provided. Some assumptions may have been made where detail was thin. Log in and answer a few targeted questions about your process to unlock a more precise and detailed diagnosis.';
-
-    const output = rawOutput + TRIAL_NOTE;
 
     // Log to Supabase (best-effort — don't fail the response if logging fails)
     try {
