@@ -68,9 +68,6 @@ function ExecutiveSummary({ data }: { data: AnalysisResult }) {
         <div className="result-panel-tag">~150 words</div>
       </div>
       <div className="result-panel-body">
-        {!data.isDiagnosis && (
-          <div className="clarification-notice">More context needed</div>
-        )}
         {data.healthScore !== null && (
           <div className="score-row">
             <div className="score-num">{data.healthScore}</div>
@@ -373,6 +370,17 @@ export default function Home() {
     setTimeout(runDiagnosis, 100);
   };
 
+  const handleUnlockClick = async () => {
+    // Log login_intent event (best-effort)
+    try {
+      await supabase.from('events').insert({
+        event_type: 'login_intent',
+        user_id: user?.id ?? null,
+      });
+    } catch (_) {}
+    setShowLoginModal(true);
+  };
+
   const charCount = processText.length;
   const isLoggedIn = !!user;
   const remainingFree = Math.max(0, 2 - usageCount);
@@ -635,10 +643,17 @@ export default function Home() {
           {loading && <LoadingState progress={loadProgress} status={loadStatus} />}
 
           {!loading && result && (
-            <div ref={outputRef} className="output-section visible">
-              <ExecutiveSummary data={result} />
-              <FullDiagnosis data={result} />
-            </div>
+            <>
+              <div ref={outputRef} className="output-section visible">
+                <ExecutiveSummary data={result} />
+                <FullDiagnosis data={result} />
+              </div>
+              <div className="trial-cta">
+                <button className="btn-unlock" onClick={handleUnlockClick}>
+                  Unlock Detailed Analysis — Log In
+                </button>
+              </div>
+            </>
           )}
         </div>
       </section>

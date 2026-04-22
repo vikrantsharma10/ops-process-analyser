@@ -652,6 +652,33 @@ textarea::placeholder { color: var(--fg-dim); opacity: 0.6; }
   margin-bottom: 24px;
 }
 
+/* ── Unlock CTA ── */
+.trial-cta {
+  margin-top: 0;
+  border: 1px solid var(--border);
+  border-top: none;
+  padding: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-1);
+}
+.btn-unlock {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #0f0f0f;
+  background: var(--accent);
+  padding: 14px 40px;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.btn-unlock:hover { opacity: 0.88; }
+.btn-unlock:active { transform: scale(0.98); }
+
 /* ── Login Modal ── */
 .modal-backdrop {
   position: fixed;
