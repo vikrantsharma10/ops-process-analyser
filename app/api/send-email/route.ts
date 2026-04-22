@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
 export async function POST(request: NextRequest) {
   const { to, layer1, layer2 } = await request.json();
@@ -8,22 +8,13 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: 'Missing required fields.' }, { status: 400 });
   }
 
-  const smtpHost = process.env.SMTP_HOST;
-  const smtpUser = process.env.SMTP_USER;
-  const smtpPass = process.env.SMTP_PASS;
-
-  if (!smtpHost || !smtpUser || !smtpPass) {
-    // SMTP not configured — silently skip rather than error
-    console.warn('SMTP not configured. Set SMTP_HOST, SMTP_USER, SMTP_PASS to enable emails.');
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    console.warn('RESEND_API_KEY not configured. Set it to enable emails.');
     return Response.json({ skipped: true });
   }
 
-  const transporter = nodemailer.createTransport({
-    host: smtpHost,
-    port: parseInt(process.env.SMTP_PORT || '587'),
-    secure: process.env.SMTP_SECURE === 'true',
-    auth: { user: smtpUser, pass: smtpPass },
-  });
+  const resend = new Resend(apiKey);
 
   const divider = '─'.repeat(60);
 
@@ -48,9 +39,9 @@ export async function POST(request: NextRequest) {
     'Built by Vikrant Sharma — https://www.linkedin.com/in/vikrantsharma10/',
   ].join('\n');
 
-  await transporter.sendMail({
-    from: process.env.SMTP_FROM || smtpUser,
-    to,
+  await resend.emails.send({
+    from: 'onboarding@resend.dev',
+    to: [to],
     subject: 'Your Process Diagnosis — Ops Process Analyser',
     text: body,
   });
