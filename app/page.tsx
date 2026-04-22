@@ -43,10 +43,26 @@ function parseResponse(text: string): AnalysisResult {
 // ── Text helpers ─────────────────────────────────────────────────────────────
 
 function normalizeLayer1(text: string): string {
-  // Ensure each numbered fix item is on its own line, regardless of how Claude formatted them
+  // Force each numbered fix item onto its own line before splitting into blocks
   return text
     .replace(/(Fix these three things:)\s*(\d)/i, '$1\n$2')
-    .replace(/(\d\.[^\n]+?[.!])\s+(\d\.)/g, '$1\n$2');
+    .replace(/(\d\.[^\n]+?[.!?])\s+(\d\.)/g, '$1\n$2');
+}
+
+function Layer1Text({ text }: { text: string }) {
+  const lines = normalizeLayer1(text).split('\n');
+  return (
+    <div className="exec-text">
+      {lines.map((line, i) => {
+        const trimmed = line.trim();
+        if (!trimmed) return <div key={i} className="exec-spacer" />;
+        if (/^\d+\./.test(trimmed)) {
+          return <div key={i} className="fix-item">{trimmed}</div>;
+        }
+        return <div key={i}>{trimmed}</div>;
+      })}
+    </div>
+  );
 }
 
 function DiagText({ text }: { text: string }) {
@@ -169,7 +185,7 @@ function ExecutiveSummary({ data }: { data: AnalysisResult }) {
             )}
           </div>
         )}
-        <div className="exec-text">{normalizeLayer1(data.layer1)}</div>
+        <Layer1Text text={data.layer1} />
       </div>
     </div>
   );
@@ -259,7 +275,7 @@ function LoginModal({
           </h2>
           <p className="modal-sub">
             {stage === 'email'
-              ? 'Create a free account to continue. Your results are saved automatically.'
+              ? 'Create a free account. Your detailed analysis will be emailed to you.'
               : `We sent a 6-digit code to ${email}. Enter it below to continue.`}
           </p>
 
@@ -369,9 +385,12 @@ export default function Home() {
       return;
     }
 
-    const currentUser = await supabase.auth.getUser().then((r) => r.data.user);
+    const currentUser = await supabase.auth.getUser().then((r) => r.data.user).catch(() => null);
 
-    if (!currentUser && usageCount >= 2) {
+    // Read fresh from localStorage to avoid stale closure — this is the source of truth
+    const freshUsage = parseInt(localStorage.getItem('opa_usage') || '0');
+
+    if (!currentUser && freshUsage >= 2) {
       setShowLoginModal(true);
       return;
     }
@@ -415,9 +434,22 @@ export default function Home() {
         setResult(parsed);
 
         if (!currentUser) {
-          const newCount = usageCount + 1;
+          const newCount = freshUsage + 1;
           setUsageCount(newCount);
           localStorage.setItem('opa_usage', String(newCount));
+        }
+
+        // Send email for logged-in users (best-effort)
+        if (currentUser?.email) {
+          fetch('/api/send-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              to: currentUser.email,
+              layer1: parsed.layer1,
+              layer2: parsed.layer2,
+            }),
+          }).catch(() => {});
         }
 
         setTimeout(() => {
@@ -432,7 +464,7 @@ export default function Home() {
       setLoading(false);
       setError(err instanceof Error ? err.message : 'Analysis failed. Please try again.');
     }
-  }, [processText, usageCount, animateProgress]);
+  }, [processText, animateProgress]);
 
   const handleLoginSuccess = () => {
     setShowLoginModal(false);
@@ -739,6 +771,17 @@ export default function Home() {
               <span>PIS</span> / V1.0 — Process Intelligence Suite
             </div>
             <div className="footer-copy">Module 01 — Ops Process Analyser</div>
+          </div>
+          <div className="footer-credit">
+            Built by{' '}
+            <a
+              href="https://www.linkedin.com/in/vikrantsharma10/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="footer-credit-link"
+            >
+              Vikrant Sharma
+            </a>
           </div>
         </div>
       </footer>
