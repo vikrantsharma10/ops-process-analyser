@@ -196,16 +196,21 @@ function CopyButton({ text, eventType }: { text: string; eventType: string }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
+    console.log('copy clicked');
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-      fetch('/api/log-event', {
+      const res = await fetch('/api/log-event', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ event_type: eventType }),
-      }).catch(() => {});
-    } catch (_) {}
+      });
+      const data = await res.json();
+      console.log('supabase result', data, data.error ?? null);
+    } catch (err) {
+      console.error('copy handler error', err);
+    }
   };
 
   return (
