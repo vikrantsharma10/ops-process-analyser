@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef, useCallback } from 'react';
-import { supabase } from '@/lib/supabase';
 
 interface AnalysisResult {
   layer1: string;
@@ -201,7 +200,11 @@ function CopyButton({ text, eventType }: { text: string; eventType: string }) {
       await navigator.clipboard.writeText(text);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-      void supabase.from('events').insert({ event_type: eventType, user_id: null });
+      fetch('/api/log-event', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ event_type: eventType }),
+      }).catch(() => {});
     } catch (_) {}
   };
 
