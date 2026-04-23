@@ -486,6 +486,14 @@ nav {
   transition: border-color 0.2s;
 }
 .input-area:focus-within { border-color: var(--accent); }
+.input-disclaimer {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--fg-dim);
+  letter-spacing: 0.04em;
+  margin-top: 6px;
+  margin-bottom: 2px;
+}
 .input-label {
   font-family: var(--font-mono);
   font-size: 10px;

@@ -610,6 +610,7 @@ export default function Home() {
               disabled={loading}
             />
           </div>
+          <div className="input-disclaimer">Analyses are benchmarked against best industry practices and the author's operational experience. Treat this as your thinking aid, not a ready-made fix.</div>
 
           {error && <div className="inline-error">⚠ {error}</div>}
 
