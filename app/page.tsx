@@ -57,7 +57,7 @@ function LoginGate() {
   );
 }
 
-function ResultBlock({ label, accent, children }: { label: string; accent: string; textColor: string; children: React.ReactNode }) {
+function ResultBlock({ label, accent, children }: { label: string; accent: string; children: React.ReactNode }) {
   return (
     <div style={{
       padding: '24px 28px',
