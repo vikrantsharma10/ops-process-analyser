@@ -1,12 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
+:root {
+  --cream: #FAF8F3;
+  --black: #0B0B0B;
+  --border: #E6E1DA;
+  --muted: #7a7670;
+  --lime: #DDF7A8;
+  --sky: #BEE9F7;
+  --yellow: #F3E86A;
+  --lavender: #D8BEF7;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'DM Sans', sans-serif;
+}
+
 html, body {
-  background-color: #0f0f0f;
-  color: #f0ede6;
-  font-family: system-ui, -apple-system, sans-serif;
+  background-color: var(--cream);
+  color: var(--black);
+  font-family: var(--font-sans);
   min-height: 100vh;
+}
+
+.dot-pattern {
+  background-image: 
+    linear-gradient(to right, #E6E1DA 1px, transparent 1px), 
+    linear-gradient(to bottom, #E6E1DA 1px, transparent 1px);
+  background-size: 40px 40px;
 }
