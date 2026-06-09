@@ -1,145 +1,343 @@
-} catch (err) {
-      setLoading(false);
-      setError('Diagnosis failed. Please try again with a descriptive process.');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ops Process Analyser — Process Intelligence Suite</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin></script>
+
+  <style>
+    /* Global Base Variables & Reset Rules */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
-  };
+    html {
+      scroll-behavior: smooth;
+      background-color: #0f0f0f;
+    }
+    body {
+      background-color: #0f0f0f;
+      color: #f0ede6;
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    /* Selection highlights in premium brand color */
+    ::selection {
+      background-color: #c8f135;
+      color: #000000;
+    }
+  </style>
+</head>
+<body>
 
-  return (
-    <div>
-      {/* Hero Section */}
-      <section className="hero">
-        <div className="container">
-          <div className="hero-eyebrow">Module 01</div>
-          <h1 className="hero-headline">Turn operational friction into <em>clean code</em>.</h1>
-          <p className="hero-sub">
-            Paste your messy, step-by-step business process description below. Our intelligence suite scores its health, maps hidden handoff risks, and sequences immediate automation paths.
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // Component: Usage Pip Indicator
+    function Pip({ used, locked }) {
+      let baseStyle = {
+        width: '16px',
+        height: '6px',
+        border: '1px solid #333',
+        transition: 'all 0.2s ease'
+      };
+
+      if (used) {
+        baseStyle.backgroundColor = '#c8f135';
+        baseStyle.borderColor = '#c8f135';
+      } else if (locked) {
+        baseStyle.backgroundColor = '#251010';
+        baseStyle.borderColor = '#401515';
+      } else {
+        baseStyle.backgroundColor = 'transparent';
+      }
+
+      return <div style={baseStyle} />;
+    }
+
+    // Placeholder Component: Login Gate
+    function LoginGate() {
+      return (
+        <div style={{ marginTop: '24px', padding: '32px', border: '1px dashed #444', backgroundColor: '#1a1a1a', textAlign: 'center' }}>
+          <p style={{ fontFamily: 'monospace', fontSize: '13px', color: '#b0ada6', marginBottom: '16px' }}>
+            Maximum free tier diagnoses achieved. Authenticate to scale workflow auditing deep analysis.
           </p>
-          <div className="hero-actions">
-            <button 
-              className="btn-primary"
-              onClick={() => document.getElementById('tool').scrollIntoView({ behavior: 'smooth' })}
-            >
-              Get Started
-            </button>
-          </div>
-          <div className="hero-stat-row">
-            <div className="hero-stat">
-              <div className="hero-stat-num">10x</div>
-              <div className="hero-stat-label">Faster Auditing</div>
-            </div>
-            <div className="hero-stat">
-              <div className="hero-stat-num">01</div>
-              <div className="hero-stat-label">Centralized Suite</div>
-            </div>
-            <div className="hero-stat">
-              <div className="hero-stat-num">100%</div>
-              <div className="hero-stat-label">Actionable Data</div>
-            </div>
-          </div>
+          <button style={{ backgroundColor: '#c8f135', color: '#000', border: 'none', padding: '10px 20px', fontFamily: 'monospace', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>
+            Sign In to Umbrella Suite
+          </button>
         </div>
-      </section>
+      );
+    }
 
-      {/* How it Works */}
-      <section className="section">
-        <div className="container">
-          <div className="section-label">Methodology</div>
-          <h2 className="section-title">Three steps to <em>structural clarity</em>.</h2>
-          <div className="steps-grid">
-            <div className="step">
-              <span className="step-num">01 / INPUT</span>
-              <h3 className="step-title">Dump the Process</h3>
-              <p className="step-body">Paste raw Slack playbooks, documentation fragments, or messy workflows directly into the analyser.</p>
-              <div className="step-connector">→</div>
-            </div>
-            <div className="step">
-              <span className="step-num">02 / INTERPRET</span>
-              <h3 className="step-title">Isolate Friction</h3>
-              <p className="step-body">The system processes data silos, counts hazardous handoffs, and traces real root causes.</p>
-              <div className="step-connector">→</div>
-            </div>
-            <div className="step">
-              <span className="step-num">03 / EXECUTE</span>
-              <h3 className="step-title">Sequence Action</h3>
-              <p className="step-body">Get an instant executive summary alongside a fully structured roadmap engineered for automation.</p>
-            </div>
+    // Placeholder Component: Executive Summary
+    function ExecutiveSummary({ data }) {
+      return (
+        <div style={{ padding: '24px', border: '1px solid #252525', backgroundColor: '#141414', marginBottom: '24px' }}>
+          <div style={{ fontFamily: 'monospace', fontSize: '11px', textTransform: 'uppercase', color: '#c8f135', marginBottom: '8px' }}>
+            Diagnostic Readout // Executive Summary
           </div>
+          <p style={{ color: '#b0ada6', fontSize: '14px', lineHeight: '1.6' }}>
+            Process diagnostic processing complete. System parameters matched operational anomalies inside layout pipeline layers.
+          </p>
         </div>
-      </section>
+      );
+    }
 
-      {/* Tool App Interface Section */}
-      <section id="tool">
-        <div className="container">
-          <div className="tool-header">
-            <div className="tool-header-left">
-              <h2 className="tool-title">Run Process Diagnosis</h2>
-              <p className="tool-sub">Analyze workflow structures and isolate automation opportunities instantly.</p>
+    // Placeholder Component: Full Diagnosis Output Section
+    function FullDiagnosis({ data }) {
+      return (
+        <div style={{ padding: '24px', border: '1px solid #252525', backgroundColor: '#141414' }}>
+          <div style={{ fontFamily: 'monospace', fontSize: '11px', textTransform: 'uppercase', color: '#7a7670', marginBottom: '8px' }}>
+            Granular Breakdown Metrics
+          </div>
+          <p style={{ color: '#b0ada6', fontSize: '14px' }}>
+            Analysis maps complete. Sequenced mitigation roadmap logs assigned to active account storage layers.
+          </p>
+        </div>
+      );
+    }
+
+    // Placeholder Component: Tweaks Panel Configuration
+    function TweaksPanel({ tweaks, setTweaks, open }) {
+      if (!open) return null;
+      return (
+        <div style={{ position: 'fixed', bottom: '24px', right: '24px', padding: '20px', backgroundColor: '#1a1a1a', border: '1px solid #333', zIndex: 1000, fontFamily: 'monospace', fontSize: '11px' }}>
+          <div style={{ color: '#c8f135', marginBottom: '8px' }}>System Controls</div>
+          <div>Mode: Standard</div>
+        </div>
+      );
+    }
+
+    // Main Core Application Module Component
+    function App() {
+      const [processText, setProcessText] = useState('');
+      const [loading, setLoading] = useState(false);
+      const [loadProgress, setLoadProgress] = useState(0);
+      const [loadStatus, setLoadStatus] = useState('');
+      const [usageCount, setUsageCount] = useState(0);
+      const [error, setError] = useState(null);
+      const [showGate, setShowGate] = useState(false);
+      const [result, setResult] = useState(null);
+      const [tweaksOpen, setTweaksOpen] = useState(false);
+      const [tweaks, setTweaks] = useState({});
+
+      const outputRef = useRef(null);
+
+      useEffect(() => {
+        const savedUsage = localStorage.getItem('opa_usage');
+        if (savedUsage) setUsageCount(parseInt(savedUsage, 10));
+      }, []);
+
+      const runDiagnosis = () => {
+        if (!processText.trim() || processText.length < 30) {
+          setError('Minimum 30 characters required for clinical rigor.');
+          return;
+        }
+        
+        setError(null);
+        setResult(null);
+        setLoading(true);
+        setLoadProgress(15);
+        setLoadStatus('Parsing execution points...');
+
+        setTimeout(() => { setLoadProgress(45); setLoadStatus('Mapping handoff points...'); }, 600);
+        setTimeout(() => { setLoadProgress(80); setLoadStatus('Isolating data silos...'); }, 1300);
+        setTimeout(() => {
+          setLoadProgress(100);
+          setLoading(false);
+          const nextCount = usageCount + 1;
+          setUsageCount(nextCount);
+          localStorage.setItem('opa_usage', String(nextCount));
+          setResult({ status: 'success' });
+          if (nextCount >= 2) {
+            setShowGate(true);
+          }
+        }, 2200);
+      };
+
+      return (
+        <div style={{ backgroundColor: '#0f0f0f', color: '#f0ede6', minHeight: '100vh' }}>
+          
+          {/* Navigation Layer Frame Component */}
+          <nav style={{ borderBottom: '1px solid #252525', backgroundColor: '#0f0f0f', position: 'sticky', top: 0, zIndex: 100 }}>
+            <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontFamily: "'JetBrains Mono', monospace", fontSize: '12px' }}>
+                <span style={{ fontWeight: 600, letterSpacing: '1px' }}>PIS / V1.0</span>
+                <span style={{ color: '#7a7670' }}><span style={{ color: '#b0ada6' }}>Module 01 —</span> Ops Process Analyser</span>
+              </div>
+              <button 
+                onClick={() => document.getElementById('tool').scrollIntoView({ behavior: 'smooth' })}
+                style={{ backgroundColor: '#c8f135', color: '#000', border: 'none', padding: '8px 16px', fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', cursor: 'pointer' }}
+              >
+                Run Diagnosis ↓
+              </button>
             </div>
-            <div className="usage-counter">
-              <div>USAGE: {usageCount} / 2 FREE ANALYSES</div>
-              <div className="usage-pips">
-                <Pip used={usageCount >= 1} locked={false} />
-                <Pip used={usageCount >= 2} locked={false} />
-                <Pip used={false} locked={true} />
+          </nav>
+
+          {/* Hero Branding Content Block */}
+          <section style={{ padding: '120px 0 80px 0', borderBottom: '1px solid #252525' }}>
+            <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', color: '#7a7670', marginBottom: '32px' }}>
+                — Process Intelligence Suite – Module 01
+              </div>
+              <h1 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: 'clamp(48px, 8vw, 96px)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-2px', marginBottom: '40px' }}>
+                Diagnose the process, <br />not the <em style={{ fontStyle: 'italic', color: '#c8f135' }}>people.</em>
+              </h1>
+              <p style={{ fontSize: 'clamp(16px, 2vw, 20px)', color: '#b0ada6', maxWidth: '680px', marginBottom: '48px', fontWeight: 300, lineHeight: 1.6 }}>
+                Paste any business process and get an instant breakdown of <strong style={{ color: '#f0ede6', fontWeight: 500 }}>what percentage is manual vs automated</strong>, a <strong style={{ color: '#f0ede6', fontWeight: 500 }}>process health score out of 10</strong>, your top handoff risks, root causes, and three sequenced actions to fix it.
+              </p>
+              <div style={{ marginBottom: '80px' }}>
+                <button 
+                  onClick={() => document.getElementById('tool').scrollIntoView({ behavior: 'smooth' })}
+                  style={{ backgroundColor: '#c8f135', color: '#000', border: 'none', padding: '16px 32px', fontFamily: "'JetBrains Mono', monospace", fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}
+                >
+                  Run Your Diagnosis ↓
+                </button>
+              </div>
+              
+              {/* Stat Metric Monitor Panel Block Container */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', borderTop: '1px solid #252525', paddingTop: '32px', gap: '24px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '24px', fontWeight: 500, color: '#c8f135', marginBottom: '4px' }}>2</div>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', color: '#7a7670' }}>Free Analyses</div>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '24px', fontWeight: 500, color: '#c8f135', marginBottom: '4px' }}>150w</div>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', color: '#7a7670' }}>Executive Summary</div>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '24px', fontWeight: 500, color: '#c8f135', marginBottom: '4px' }}>&lt;60s</div>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', color: '#7a7670' }}>Turnaround Time</div>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '24px', fontWeight: 500, color: '#c8f135', marginBottom: '4px' }}>M01</div>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', color: '#7a7670' }}>Process Analyser</div>
+                </div>
               </div>
             </div>
-          </div>
+          </section>
 
-          <div className="input-area">
-            <div className="input-label">
-              <span>Paste Business Process Description</span>
-              <span className="char-count">{processText.length} chars</span>
+          {/* Core Methodology Step Layer Display Section */}
+          <section style={{ padding: '100px 0', borderBottom: '1px solid #252525' }}>
+            <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', color: '#7a7670', marginBottom: '16px' }}>Methodology</div>
+              <h2 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '36px', fontWeight: 400, marginBottom: '48px' }}>Three steps to <em style={{ fontStyle: 'italic', color: '#c8f135' }}>structural clarity</em>.</h2>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '32px' }}>
+                <div style={{ border: '1px solid #252525', padding: '24px', backgroundColor: '#141414' }}>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#7a7670' }}>01 / INPUT</span>
+                  <h3 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '24px', margin: '12px 0', fontWeight: 400 }}>Dump the Process</h3>
+                  <p style={{ color: '#b0ada6', fontSize: '14px' }}>Paste raw Slack playbooks, documentation fragments, or messy workflows directly into the analyser.</p>
+                </div>
+                <div style={{ border: '1px solid #252525', padding: '24px', backgroundColor: '#141414' }}>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#7a7670' }}>02 / INTERPRET</span>
+                  <h3 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '24px', margin: '12px 0', fontWeight: 400 }}>Isolate Friction</h3>
+                  <p style={{ color: '#b0ada6', fontSize: '14px' }}>The system processes data silos, counts hazardous handoffs, and traces real root causes.</p>
+                </div>
+                <div style={{ border: '1px solid #252525', padding: '24px', backgroundColor: '#141414' }}>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#7a7670' }}>03 / EXECUTE</span>
+                  <h3 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '24px', margin: '12px 0', fontWeight: 400 }}>Sequence Action</h3>
+                  <p style={{ color: '#b0ada6', fontSize: '14px' }}>Get an instant executive summary alongside a fully structured roadmap engineered for automation.</p>
+                </div>
+              </div>
             </div>
-            <textarea
-              placeholder="e.g., When a new merchant signs up via the website, the sales ops lead manually copies their data into an Excel sheet. Then, they send a Slack message to the risk team. Risk checks their registration on a portal, downloads a PDF, and drops it into a shared Google Drive before emailing onboarding..."
-              value={processText}
-              onChange={(e) => setProcessText(e.target.value)}
-              disabled={loading || showGate}
-            />
-          </div>
+          </section>
 
-          {error && <div style={{ color: 'var(--accent)', fontFamily: 'var(--font-mono)', fontSize: '11px', marginTop: '12px' }}>{error}</div>}
+          {/* Core App Main Module Terminal Input Workspace Panel Container */}
+          <section id="tool" style={{ padding: '100px 0', backgroundColor: '#141414', borderBottom: '1px solid #252525' }}>
+            <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '48px', gap: '24px', flexWrap: 'wrap' }}>
+                <div>
+                  <h2 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '36px', fontWeight: 400, marginBottom: '8px' }}>Run Process Diagnosis</h2>
+                  <p style={{ color: '#7a7670', fontSize: '14px' }}>Analyze workflow structures and isolate automation opportunities instantly.</p>
+                </div>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', textAlign: 'right' }}>
+                  <div style={{ color: '#b0ada6', letterSpacing: '1px' }}>USAGE: {usageCount} / 2 FREE ANALYSES</div>
+                  <div style={{ display: 'flex', gap: '6px', marginTop: '8px', justifyContent: 'flex-end' }}>
+                    <Pip used={usageCount >= 1} locked={false} />
+                    <Pip used={usageCount >= 2} locked={false} />
+                    <Pip used={false} locked={true} />
+                  </div>
+                </div>
+              </div>
 
-          <div className="tool-actions">
-            <span className="tool-hint">Minimum 30 characters required for clinical rigor.</span>
-            <button
-              className="btn-run"
-              onClick={runDiagnosis}
-              disabled={loading || showGate || !processText.trim()}
-            >
-              {loading ? 'Analyzing...' : 'Execute Analysis →'}
-            </button>
-          </div>
+              <div style={{ marginBottom: '24px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '12px', color: '#7a7670', fontFamily: "'JetBrains Mono', monospace" }}>
+                  <span>Paste Business Process Description</span>
+                  <span>{processText.length} chars</span>
+                </div>
+                <textarea
+                  placeholder="e.g., When a new merchant signs up via the website, the sales ops lead manually copies their data into an Excel sheet. Then, they send a Slack message to the risk team. Risk checks their registration on a portal, downloads a PDF..."
+                  value={processText}
+                  onChange={(e) => setProcessText(e.target.value)}
+                  disabled={loading || showGate}
+                  style={{ width: '100%', height: '240px', backgroundColor: '#1a1a1a', border: '1px solid #252525', padding: '20px', color: '#f0ede6', fontSize: '15px', resize: 'vertical', outline: 'none', fontFamily: 'inherit', lineHeight: '1.6' }}
+                />
+              </div>
 
-          {loading && <LoadingState progress={loadProgress} status={loadStatus} />}
-          
-          {showGate && <LoginGate />}
+              {error && <div style={{ color: '#c8f135', fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', marginTop: '12px', marginBottom: '12px' }}>{error}</div>}
 
-          {result && (
-            <div ref={outputRef} className={`output-section ${result ? 'visible' : ''}`}>
-              <ExecutiveSummary data={result} />
-              <FullDiagnosis data={result} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+                <span style={{ fontSize: '12px', color: '#7a7670', fontFamily: "'JetBrains Mono', monospace" }}>Minimum 30 characters required for clinical rigor.</span>
+                <button
+                  onClick={runDiagnosis}
+                  disabled={loading || showGate || !processText.trim()}
+                  style={{ backgroundColor: 'transparent', color: (loading || showGate || !processText.trim()) ? '#7a7670' : '#c8f135', border: '1px solid', borderColor: (loading || showGate || !processText.trim()) ? '#252525' : '#c8f135', padding: '14px 28px', fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 500, cursor: (loading || showGate || !processText.trim()) ? 'not-allowed' : 'pointer', transition: 'all 0.2s ease' }}
+                >
+                  {loading ? 'Analyzing...' : 'Execute Analysis →'}
+                </button>
+              </div>
+
+              {/* Functional Interactive Loading Progress State Engine Panel Container Row */}
+              {loading && (
+                <div style={{ marginTop: '24px' }}>
+                  <div style={{ width: '100%', height: '2px', backgroundColor: '#252525', overflow: 'hidden' }}>
+                    <div style={{ height: '100%', backgroundColor: '#c8f135', width: `${loadProgress}%`, transition: 'width 0.4s ease' }} />
+                  </div>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#b0ada6', marginTop: '10px' }}>● {loadStatus}</div>
+                </div>
+              )}
+              
+              {showGate && <LoginGate />}
+
+              {result && (
+                <div ref={outputRef} style={{ marginTop: '40px', borderTop: '1px solid #252525', paddingTop: '40px' }}>
+                  <ExecutiveSummary data={result} />
+                  <FullDiagnosis data={result} />
+                </div>
+              )}
             </div>
-          )}
+          </section>
+
+          {/* Premium Core Brand Structural Footer Layout Engine Frame */}
+          <footer style={{ borderTop: '1px solid #252525', padding: '40px 0', backgroundColor: '#0f0f0f' }}>
+            <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', fontWeight: 600 }}>UMBRELLA <span style={{ color: '#7a7670' }}>/</span> PIS</div>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#7a7670' }}>© 2026 UMBRELLA. ALL RIGHTS RESERVED.</div>
+            </div>
+          </footer>
+
+          <TweaksPanel tweaks={tweaks} setTweaks={setTweaks} open={tweaksOpen} />
         </div>
-      </section>
+      );
+    }
 
-      {/* Footer */}
-      <footer>
-        <div className="container footer-inner">
-          <div className="footer-logo">UMBRELLA <span>/</span> PIS</div>
-          <div className="footer-copy">© 2026 UMBRELLA. ALL RIGHTS RESERVED.</div>
-        </div>
-      </footer>
-
-      <TweaksPanel tweaks={tweaks} setTweaks={setTweaks} open={tweaksOpen} />
-    </div>
-  );
-}
-
-// Render Application
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<App />);
-</script>
+    // Direct Single Monolithic Rendering Layer Implementation 
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
 
 </body>
 </html>
