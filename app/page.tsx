@@ -127,8 +127,8 @@ export default function App() {
               </div>
             </div>
             <a href="https://coveredbyumbrella.com" style={{ fontFamily: "DM Sans, sans-serif", fontSize: "13px", fontWeight: 500, color: "#7a7670", textDecoration: "none" }}>
-              Back to Umbrella
-            </a>
+  ← Back to Umbrella
+</a>
           </div>
 
           <div style={{ flex: "1 1 380px", display: "flex", flexDirection: "column", gap: "16px" }}>
