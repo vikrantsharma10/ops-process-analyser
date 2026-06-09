@@ -1,7 +1,6 @@
 import './globals.css';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 
-// Optimize fonts natively via Next.js loader subroutines
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-body',
@@ -27,7 +26,6 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <head>
-        {/* Fallback import for Instrument Serif */}
         <link 
           href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" 
           rel="stylesheet" 
