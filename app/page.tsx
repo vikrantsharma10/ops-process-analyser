@@ -2,138 +2,237 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 
-// Component: Precision-engineered Usage Pip Indicator 
+// Component: Usage Pip Indicator
 function Pip({ used, locked }: { used: boolean; locked: boolean }) {
+  const baseStyle: React.CSSProperties = {
+    width: '16px',
+    height: '6px',
+    border: '1px solid #333',
+    transition: 'all 0.2s ease',
+    backgroundColor: used ? '#c8f135' : locked ? '#251010' : 'transparent',
+    borderColor: used ? '#c8f135' : locked ? '#401515' : '#333'
+  };
+
+  return <div style={baseStyle} />;
+}
+
+// Component: Login Gate
+function LoginGate() {
   return (
-    <div 
-      className="w-4 h-1.5 border transition-all duration-200"
-      style={{
-        backgroundColor: used ? '#c8f135' : locked ? '#251010' : 'transparent',
-        borderColor: used ? '#c8f135' : locked ? '#401515' : '#252525'
-      }}
-    />
+    <div style={{ marginTop: '24px', padding: '32px', border: '1px dashed #444', backgroundColor: '#1a1a1a', textAlign: 'center', width: '100%' }}>
+      <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', color: '#b0ada6', marginBottom: '16px' }}>
+        Maximum free tier diagnoses achieved. Authenticate to scale workflow auditing deep analysis.
+      </p>
+      <button style={{ backgroundColor: '#c8f135', color: '#000', border: 'none', padding: '10px 20px', fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>
+        Sign In to Umbrella Suite
+      </button>
+    </div>
   );
 }
 
+// Component: Executive Summary Output Block
+function ExecutiveSummary({ data }: { data: any }) {
+  return (
+    <div style={{ padding: '24px', border: '1px solid #252525', backgroundColor: '#141414', marginBottom: '24px', width: '100%' }}>
+      <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', textTransform: 'uppercase', color: '#c8f135', marginBottom: '8px', letterSpacing: '1px' }}>
+        Diagnostic Readout // Executive Summary
+      </div>
+      <p style={{ color: '#b0ada6', fontSize: '14px', lineHeight: '1.6', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+        Process diagnostic processing complete. System parameters matched operational anomalies inside layout pipeline layers.
+      </p>
+    </div>
+  );
+}
+
+// Component: Full Granular Breakdown Section
+function FullDiagnosis({ data }: { data: any }) {
+  return (
+    <div style={{ padding: '24px', border: '1px solid #252525', backgroundColor: '#141414', width: '100%' }}>
+      <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', textTransform: 'uppercase', color: '#7a7670', marginBottom: '8px', letterSpacing: '1px' }}>
+        Granular Breakdown Metrics
+      </div>
+      <p style={{ color: '#b0ada6', fontSize: '14px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+        Analysis maps complete. Sequenced mitigation roadmap logs assigned to active account storage layers.
+      </p>
+    </div>
+  );
+}
+
+// Main Monolithic Application View
 export default function App() {
   const [processText, setProcessText] = useState('');
   const [loading, setLoading] = useState(false);
+  const [loadProgress, setLoadProgress] = useState(0);
+  const [loadStatus, setLoadStatus] = useState('');
   const [usageCount, setUsageCount] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+  const [showGate, setShowGate] = useState(false);
+  const [result, setResult] = useState<{ status: string } | null>(null);
 
   const outputRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    const savedUsage = localStorage.getItem('opa_usage');
+    if (savedUsage) setUsageCount(parseInt(savedUsage, 10));
+  }, []);
+
+  const runDiagnosis = () => {
+    if (!processText.trim() || processText.length < 30) {
+      setError('Minimum 30 characters required for clinical rigor.');
+      return;
+    }
+    
+    setError(null);
+    setResult(null);
+    setLoading(true);
+    setLoadProgress(15);
+    setLoadStatus('Parsing execution points...');
+
+    setTimeout(() => { setLoadProgress(45); setLoadStatus('Mapping handoff points...'); }, 600);
+    setTimeout(() => { setLoadProgress(80); setLoadStatus('Isolating data silos...'); }, 1300);
+    setTimeout(() => {
+      setLoadProgress(100);
+      setLoading(false);
+      const nextCount = usageCount + 1;
+      setUsageCount(nextCount);
+      localStorage.setItem('opa_usage', String(nextCount));
+      setResult({ status: 'success' });
+      if (nextCount >= 2) {
+        setShowGate(true);
+      }
+    }, 2200);
+  };
+
   return (
-    <div className="min-h-screen bg-[#0f0f0f] text-[#f0ede6] font-mono-system flex flex-col justify-between antialiased selection:bg-[#c8f135]">
+    <div style={{ backgroundColor: '#0f0f0f', color: '#f0ede6', minHeight: '100vh', width: '100%', display: 'flex', flexDirection: 'column' }}>
       
-      {/* Navigation Header Line */}
-      <nav className="w-full border-b border-[#252525] bg-[#0f0f0f]/90 backdrop-blur-md sticky top-0 z-50 px-6 py-5 md:px-12 flex items-center justify-between">
-        <div className="text-sm font-bold tracking-tight text-[#f0ede6] flex items-center gap-2">
-          <span className="bg-[#f0ede6] text-[#0f0f0f] text-[10px] font-mono-system font-medium px-1.5 py-0.5 tracking-normal">PIS</span>
-          Umbrella <span className="text-[#7a7670] font-normal">/ Process Intelligence Suite</span>
-        </div>
-        <div className="text-[10px] text-[#7a7670] uppercase tracking-widest hidden sm:block">
-          Module 01 / Active
+      {/* Premium Font Injection */}
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+      {/* Navigation Header */}
+      <nav style={{ borderBottom: '1px solid #252525', backgroundColor: '#0f0f0f', width: '100%' }}>
+        <div style={{ width: '100%', maxWidth: '1400px', margin: '0 auto', padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontFamily: "'JetBrains Mono', monospace", fontSize: '12px' }}>
+            <span style={{ fontWeight: 600, letterSpacing: '1px' }}>PISUMBRELLA / PROCESS INTELLIGENCE SUITE</span>
+          </div>
+          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#7a7670' }}>
+            MODULE 01 / ACTIVE
+          </div>
         </div>
       </nav>
 
-      {/* Main Responsive Utility Workspace Shell */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-6 py-12 md:px-12 md:py-24 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+      {/* Main Two-Column Dynamic Grid Layout Container */}
+      <div style={{ flex: 1, width: '100%', maxWidth: '1400px', margin: '0 auto', padding: '64px 24px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '64px', alignItems: 'start' }}>
         
-        {/* Left Layout Workspace Column: Eyebrow, Context & Diagnostic Readout */}
-        <div className="lg:col-span-5 space-y-8 lg:sticky lg:top-32">
-          <div className="space-y-4">
-            <div className="text-xs font-medium text-[#7a7670] uppercase tracking-widest">
+        {/* Left Information Panel */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', width: '100%' }}>
+          <div>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', color: '#7a7670', marginBottom: '16px', letterSpacing: '1px' }}>
               01 // DIAGNOSTIC UTILITY
             </div>
-            <h1 className="font-display-serif text-5xl md:text-6xl font-light tracking-tight text-[#f0ede6] leading-[1.05]">
-              Process <em className="italic font-normal text-[#c8f135] not-styled bg-[#c8f135]/10 px-2 py-0.5">Analyser</em>.
+            <h1 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '64px', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-1px', marginBottom: '24px' }}>
+              Process <span style={{ fontStyle: 'italic', color: '#c8f135' }}>Analyser</span>.
             </h1>
-            <p className="text-[#b0ada6] text-sm leading-relaxed max-w-md">
+            <p style={{ fontFamily: 'system-ui, -apple-system, sans-serif', fontSize: '16px', color: '#b0ada6', lineHeight: '1.6', fontWeight: 300 }}>
               Isolate operational friction, score system integrity, and map ownership boundaries through high-precision analytical logic.
             </p>
           </div>
 
-          {/* System Run Tracker Box Component */}
-          <div className="border border-[#252525] bg-[#141414] p-5 max-w-sm space-y-3">
-            <div className="flex justify-between items-center text-[11px] tracking-wider text-[#7a7670] uppercase">
+          {/* Metric Box Tracker */}
+          <div style={{ border: '1px solid #252525', backgroundColor: '#141414', padding: '24px', maxWidth: '360px', width: '100%' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#b0ada6', textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '0.5px' }}>
               <span>System Track Run Rate</span>
-              <span className="text-[#c8f135] font-bold">{usageCount}/10 Runs</span>
+              <span style={{ color: '#c8f135', fontWeight: 600 }}>{usageCount}/10 Runs</span>
             </div>
-            <div className="flex gap-1">
-              {Array.from({ length: 10 }).map((_, i) => (
-                <Pip key={i} used={i < usageCount} locked={false} />
-              ))}
+            <div style={{ display: 'flex', gap: '6px' }}>
+              <Pip used={usageCount >= 1} locked={false} />
+              <Pip used={usageCount >= 2} locked={false} />
+              <Pip used={false} locked={true} />
+              <Pip used={false} locked={true} />
+              <Pip used={false} locked={true} />
+              <Pip used={false} locked={true} />
+              <Pip used={false} locked={true} />
+              <Pip used={false} locked={true} />
+              <Pip used={false} locked={true} />
+              <Pip used={false} locked={true} />
             </div>
           </div>
         </div>
 
-        {/* Right Layout Workspace Column: Form Input Workspace Block & Terminal Output */}
-        <div className="lg:col-span-7 space-y-6 w-full">
+        {/* Right Input & Diagnostics Terminal */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '100%' }}>
           
-          {/* Data Entry Container Block */}
-          <div className="border border-[#252525] bg-[#141414] p-6 md:p-8 space-y-5">
-            <div className="flex justify-between items-center border-b border-[#252525] pb-4">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#f0ede6]">
-                Raw Input Data Buffer
-              </span>
-              <span className="text-xs font-mono text-[#7a7670]">
-                {processText.length} Chars
-              </span>
-            </div>
-
-            <textarea
-              value={processText}
-              onChange={(e) => setProcessText(e.target.value)}
-              placeholder="Paste your operational process or plain text documentation playbooks here..."
-              className="w-full h-64 p-4 text-sm leading-relaxed border border-[#252525] bg-[#0f0f0f] text-[#f0ede6] placeholder:text-[#7a7670] resize-none focus:border-[#c8f135]"
-            />
-
-            <button
-              onClick={() => {
-                setLoading(true);
-                setUsageCount(prev => Math.min(prev + 1, 10));
-                setTimeout(() => setLoading(false), 2000); // UI simulation framework reset
-              }}
-              disabled={loading || !processText.trim()}
-              className="w-full py-4 text-xs font-bold uppercase tracking-widest transition-all duration-200 bg-[#c8f135] text-[#0f0f0f] hover:opacity-90 disabled:bg-[#252525] disabled:text-[#7a7670] disabled:cursor-not-allowed"
-            >
-              {loading ? "Executing Logic Engine..." : "Execute Process Analysis →"}
-            </button>
-          </div>
-
-          {/* Results Analytics Terminal Window Component */}
-          <div 
-            ref={outputRef} 
-            className="border border-[#252525] bg-[#141414] p-6 md:p-8 min-h-[160px] flex flex-col justify-between transition-all duration-200"
-          >
-            <div className="text-[11px] font-bold text-[#7a7670] uppercase tracking-wider mb-4">
-              Output Terminal / Results Diagnosis
+          <div style={{ border: '1px solid #252525', backgroundColor: '#141414', padding: '24px', width: '100%' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '11px', color: '#7a7670', fontFamily: "'JetBrains Mono', monospace", textTransform: 'uppercase' }}>
+              <span>Raw Input Data Buffer</span>
+              <span>{processText.length} Chars</span>
             </div>
             
-            <div className="flex-1 font-mono text-sm leading-relaxed">
-              {loading ? (
-                <span className="text-[#c8f135] animate-pulse flex items-center gap-2">
-                  <span className="inline-block w-2 h-2 bg-[#c8f135]"></span>
-                  &gt; Parsing data stream patterns and classifying step metrics...
-                </span>
-              ) : (
-                <span className="text-[#b0ada6]">
-                  &gt; Awaiting operational text data payload string inputs in order to run diagnosis execution framework.
-                </span>
-              )}
+            <textarea
+              placeholder="Paste your operational process or plain text documentation here..."
+              value={processText}
+              onChange={(e) => setProcessText(e.target.value)}
+              disabled={loading || showGate}
+              style={{ width: '100%', height: '200px', backgroundColor: '#0f0f0f', border: '1px solid #252525', padding: '16px', color: '#f0ede6', fontSize: '14px', resize: 'vertical', outline: 'none', fontFamily: "'JetBrains Mono', monospace", lineHeight: '1.6' }}
+            />
+
+            {error && <div style={{ color: '#c8f135', fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', marginTop: '12px' }}>{error}</div>}
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginTop: '24px' }}>
+              <span style={{ fontSize: '11px', color: '#7a7670', fontFamily: "'JetBrains Mono', monospace" }}>Awaiting execution string stream payload...</span>
+              <button
+                onClick={runDiagnosis}
+                disabled={loading || showGate || !processText.trim()}
+                style={{ backgroundColor: 'transparent', color: (loading || showGate || !processText.trim()) ? '#7a7670' : '#c8f135', border: '1px solid', borderColor: (loading || showGate || !processText.trim()) ? '#252525' : '#c8f135', padding: '12px 24px', fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', fontWeight: 500, cursor: (loading || showGate || !processText.trim()) ? 'not-allowed' : 'pointer', transition: 'all 0.2s ease' }}
+              >
+                {loading ? 'Executing Engine Stream...' : 'Execute Process Analysis →'}
+              </button>
             </div>
+
+            {/* Loading Meter */}
+            {loading && (
+              <div style={{ marginTop: '24px' }}>
+                <div style={{ width: '100%', height: '2px', backgroundColor: '#252525', overflow: 'hidden' }}>
+                  <div style={{ height: '100%', backgroundColor: '#c8f135', width: `${loadProgress}%`, transition: 'width 0.4s ease' }} />
+                </div>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#b0ada6', marginTop: '10px' }}>● {loadStatus}</div>
+              </div>
+            )}
           </div>
 
-        </div>
-      </main>
+          {/* Diagnosis Pipeline Readout Outputs */}
+          {showGate && <LoginGate />}
 
-      {/* Structural Minimalist Site Brand Footer Block */}
-      <footer className="w-full border-t border-[#252525] bg-[#0f0f0f] px-6 py-6 md:px-12 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-[#7a7670] tracking-wider uppercase">
-        <div>
-          © 2026 Umbrella Engine. All Rights Reserved.
+          {result ? (
+            <div ref={outputRef} style={{ width: '100%' }}>
+              <ExecutiveSummary data={result} />
+              <FullDiagnosis data={result} />
+            </div>
+          ) : (
+            !showGate && !loading && (
+              <div style={{ border: '1px dashed #252525', padding: '32px', color: '#7a7670', width: '100%' }}>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', lineHeight: '1.5' }}>
+                  Output Terminal / Results Diagnosis <br />
+                  &gt; Awaiting operational text data payload string inputs in order to run diagnosis execution framework.
+                </div>
+              </div>
+            )
+          )}
+
         </div>
-        <div className="font-bold tracking-widest text-[#f0ede6]">
-          At Umbrella, things are done differently.
+      </div>
+
+      {/* Brand Suite Footer */}
+      <footer style={{ borderTop: '1px solid #252525', padding: '40px 0', backgroundColor: '#0f0f0f', width: '100%', marginTop: 'auto' }}>
+        <div style={{ width: '100%', maxWidth: '1400px', margin: '0 auto', padding: '0 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#7a7670' }}>
+            © 2026 UMBRELLA ENGINE. ALL RIGHTS RESERVED.
+          </div>
+          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', color: '#f0ede6', fontWeight: 500, letterSpacing: '0.5px' }}>
+            AT UMBRELLA, THINGS ARE DONE DIFFERENTLY.
+          </div>
         </div>
       </footer>
 
