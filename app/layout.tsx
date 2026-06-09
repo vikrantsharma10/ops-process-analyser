@@ -1,37 +1,20 @@
-import './globals.css';
-import { Inter, JetBrains_Mono } from 'next/font/google';
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-body',
-  display: 'swap',
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-mono',
-  display: 'swap',
-});
+import './globals.css'
 
 export const metadata = {
   title: 'Ops Process Analyser — Process Intelligence Suite',
-  description: 'Isolate operations friction instantly.',
-};
+  description: 'At Umbrella, things are done differently.',
+}
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
-      <head>
-        <link 
-          href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" 
-          rel="stylesheet" 
-        />
-      </head>
-      <body>{children}</body>
+    <html lang="en" style={{ backgroundColor: '#0f0f0f', margin: 0, padding: 0 }}>
+      <body style={{ backgroundColor: '#0f0f0f', margin: 0, padding: 0 }}>
+        {children}
+      </body>
     </html>
-  );
+  )
 }
