@@ -143,13 +143,6 @@ export default function App() {
                 </ResultBlock>
               </div>
             )}
-            {!result && !showGate && !loading && (
-              <div style={{ border: "1px dashed #D0D0D0", borderRadius: "8px", padding: "48px 40px", textAlign: "center", minHeight: "160px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <span style={{ fontFamily: "DM Sans, sans-serif", fontSize: "13px", color: "#C5C0BA" }}>
-                  Your diagnosis will appear here once you run the analysis.
-                </span>
-              </div>
-            )}
             {loading && (
               <div style={{ border: "1px solid #E6E1DA", borderRadius: "8px", padding: "28px", backgroundColor: "#FAF8F3" }}>
                 <div style={{ width: "100%", height: "3px", backgroundColor: "#E6E1DA", borderRadius: "2px", overflow: "hidden", marginBottom: "14px" }}>
