@@ -1,6 +1,19 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+
+// Component: Usage Pip Indicator
+function Pip({ used, locked }: { used: boolean; locked: boolean }) {
+  const baseStyle: React.CSSProperties = {
+    width: '16px',
+    height: '6px',
+    border: '1px solid #333',
+    transition: 'all 0.2s ease',
+    backgroundColor: used ? '#c8f135' : locked ? '#251010' : 'transparent',
+    borderColor: used ? '#c8f135' : locked ? '#401515' : '#333'
+  };
+  return <div style={baseStyle} />;
+}
 
 export default function App() {
   const [processText, setProcessText] = useState('');
@@ -8,149 +21,235 @@ export default function App() {
   const [loadProgress, setLoadProgress] = useState(0);
   const [loadStatus, setLoadStatus] = useState('');
   const [usageCount, setUsageCount] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+  const [showGate, setShowGate] = useState(false);
+  const [result, setResult] = useState<{ status: string } | null>(null);
+
+  const outputRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const savedUsage = localStorage.getItem('opa_usage');
     if (savedUsage) setUsageCount(parseInt(savedUsage, 10));
+    
+    // Inject custom Google Fonts directly into document head dynamically
+    const link1 = document.createElement('link');
+    link1.rel = 'preconnect';
+    link1.href = 'https://fonts.googleapis.com';
+    document.head.appendChild(link1);
+
+    const link2 = document.createElement('link');
+    link2.rel = 'preconnect';
+    link2.href = 'https://fonts.gstatic.com';
+    link2.crossOrigin = 'anonymous';
+    document.head.appendChild(link2);
+
+    const link3 = document.createElement('link');
+    link3.rel = 'stylesheet';
+    link3.href = 'https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400;500;600&display=swap';
+    document.head.appendChild(link3);
   }, []);
 
   const runDiagnosis = () => {
-    if (!processText.trim()) return;
+    if (!processText.trim() || processText.length < 30) {
+      setError('Minimum 30 characters required for clinical rigor.');
+      return;
+    }
+    
+    setError(null);
+    setResult(null);
     setLoading(true);
-    setLoadProgress(20);
-    setLoadStatus('Parsing process structure...');
+    setLoadProgress(15);
+    setLoadStatus('Parsing execution points...');
 
-    setTimeout(() => { setLoadProgress(60); setLoadStatus('Mapping handoff points...'); }, 800);
+    setTimeout(() => { setLoadProgress(45); setLoadStatus('Mapping handoff points...'); }, 600);
+    setTimeout(() => { setLoadProgress(80); setLoadStatus('Isolating data silos...'); }, 1300);
     setTimeout(() => {
       setLoadProgress(100);
       setLoading(false);
       const nextCount = usageCount + 1;
       setUsageCount(nextCount);
       localStorage.setItem('opa_usage', String(nextCount));
-    }, 2000);
+      setResult({ status: 'success' });
+      if (nextCount >= 2) {
+        setShowGate(true);
+      }
+    }, 2200);
   };
 
   return (
-    <div className="min-h-screen bg-[#0f0f0f] text-[#f0ede6] font-sans selection:bg-[#c8f135] selection:text-black antialiased">
+    <div style={{ backgroundColor: '#0f0f0f', color: '#f0ede6', minHeight: '100vh', fontFamily: 'system-ui, sans-serif' }}>
       
-      {/* Navigation Bar */}
-      <nav className="border-b border-[#252525] bg-[#0f0f0f] sticky top-0 z-50">
-        <div className="max-w-[1400px] mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-4 font-mono text-xs tracking-wider">
-            <span className="font-semibold text-[#f0ede6]">PIS / V1.0</span>
-            <span className="text-[#7a7670]">
-              <span className="text-[#b0ada6]">Module 01 —</span> Ops Process Analyser
-            </span>
+      {/* Navigation Layer */}
+      <nav style={{ borderBottom: '1px solid #252525', backgroundColor: '#0f0f0f', position: 'sticky', top: 0, zIndex: 100 }}>
+        <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontFamily: "'JetBrains Mono', monospace", fontSize: '12px' }}>
+            <span style={{ fontWeight: 600, letterSpacing: '1px' }}>PIS / V1.0</span>
+            <span style={{ color: '#7a7670' }}><span style={{ color: '#b0ada6' }}>Module 01 —</span> Ops Process Analyser</span>
           </div>
           <button 
             onClick={() => document.getElementById('tool')?.scrollIntoView({ behavior: 'smooth' })}
-            className="bg-[#c8f135] hover:bg-[#8aaa24] text-black border-none px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-wider transition-colors duration-200 cursor-pointer"
+            style={{ backgroundColor: '#c8f135', color: '#000', border: 'none', padding: '8px 16px', fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', cursor: 'pointer' }}
           >
             Run Diagnosis ↓
           </button>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="py-24 border-b border-[#252525]">
-        <div className="max-w-[1200px] mx-auto px-6">
-          <div className="font-mono text-[11px] uppercase tracking-[2px] text-[#7a7670] mb-8">
+      {/* Hero Block */}
+      <section style={{ padding: '120px 0 80px 0', borderBottom: '1px solid #252525' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
+          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', color: '#7a7670', marginBottom: '32px' }}>
             — Process Intelligence Suite – Module 01
           </div>
-          
-          <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl font-normal leading-[1.05] tracking-[-2px] text-[#f0ede6] mb-10">
-            Diagnose the process, <br />not the <em className="italic text-[#c8f135] not-italic">people.</em>
+          <h1 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: 'clamp(48px, 8vw, 96px)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-2px', marginBottom: '40px' }}>
+            Diagnose the process, <br />not the <em style={{ fontStyle: 'italic', color: '#c8f135' }}>people.</em>
           </h1>
-          
-          <p className="text-lg md:text-xl text-[#b0ada6] max-w-[680px] font-light mb-12 leading-relaxed">
-            Paste any business process and get an instant breakdown of <strong className="text-[#f0ede6] font-medium">what percentage is manual vs automated</strong>, a <strong className="text-[#f0ede6] font-medium">process health score out of 10</strong>, your top handoff risks, root causes, and three sequenced actions to fix it.
+          <p style={{ fontSize: 'clamp(16px, 2vw, 20px)', color: '#b0ada6', maxWidth: '680px', marginBottom: '48px', fontWeight: 300, lineHeight: 1.6 }}>
+            Paste any business process and get an instant breakdown of <strong style={{ color: '#f0ede6', fontWeight: 500 }}>what percentage is manual vs automated</strong>, a <strong style={{ color: '#f0ede6', fontWeight: 500 }}>process health score out of 10</strong>, your top handoff risks, root causes, and three sequenced actions to fix it.
           </p>
-          
-          <div className="mb-20">
+          <div style={{ marginBottom: '80px' }}>
             <button 
               onClick={() => document.getElementById('tool')?.scrollIntoView({ behavior: 'smooth' })}
-              className="bg-[#c8f135] hover:bg-[#8aaa24] text-black border-none px-8 py-4 font-mono text-sm font-bold tracking-wide transition-colors duration-200 cursor-pointer"
+              style={{ backgroundColor: '#c8f135', color: '#000', border: 'none', padding: '16px 32px', fontFamily: "'JetBrains Mono', monospace", fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}
             >
               Run Your Diagnosis ↓
             </button>
           </div>
-
-          {/* Metric Row Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 border-t border-[#252525] pt-8 gap-6">
-            <div className="flex flex-col">
-              <span className="font-mono text-2xl font-medium text-[#c8f135] mb-1">2</span>
-              <span className="font-mono text-[11px] uppercase tracking-wider text-[#7a7670]">Free Analyses</span>
+          
+          {/* Stat Metric Row */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', borderTop: '1px solid #252525', paddingTop: '32px', gap: '24px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '24px', fontWeight: 500, color: '#c8f135', marginBottom: '4px' }}>2</div>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', color: '#7a7670' }}>Free Analyses</div>
             </div>
-            <div className="flex flex-col">
-              <span className="font-mono text-2xl font-medium text-[#c8f135] mb-1">150w</span>
-              <span className="font-mono text-[11px] uppercase tracking-wider text-[#7a7670]">Executive Summary</span>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '24px', fontWeight: 500, color: '#c8f135', marginBottom: '4px' }}>150w</div>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', color: '#7a7670' }}>Executive Summary</div>
             </div>
-            <div className="flex flex-col">
-              <span className="font-mono text-2xl font-medium text-[#c8f135] mb-1">&lt;60s</span>
-              <span className="font-mono text-[11px] uppercase tracking-wider text-[#7a7670]">Turnaround Time</span>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '24px', fontWeight: 500, color: '#c8f135', marginBottom: '4px' }}>&lt;60s</div>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', color: '#7a7670' }}>Turnaround Time</div>
             </div>
-            <div className="flex flex-col">
-              <span className="font-mono text-2xl font-medium text-[#c8f135] mb-1">M01</span>
-              <span className="font-mono text-[11px] uppercase tracking-wider text-[#7a7670]">Process Analyser</span>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '24px', fontWeight: 500, color: '#c8f135', marginBottom: '4px' }}>M01</div>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', color: '#7a7670' }}>Process Analyser</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Interactive Tool Workspace */}
-      <section id="tool" className="py-24 bg-[#141414] border-b border-[#252525]">
-        <div className="max-w-[1200px] mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-start mb-12 gap-6">
-            <div>
-              <h2 className="font-serif text-4xl font-normal text-[#f0ede6] mb-2">Run Process Diagnosis</h2>
-              <p className="text-[#7a7670] text-sm">Analyze workflow structures and isolate automation opportunities instantly.</p>
+      {/* Methodology Section */}
+      <section style={{ padding: '100px 0', borderBottom: '1px solid #252525' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
+          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', color: '#7a7670', marginBottom: '16px' }}>Methodology</div>
+          <h2 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '36px', fontWeight: 400, marginBottom: '48px' }}>Three steps to <em style={{ fontStyle: 'italic', color: '#c8f135' }}>structural clarity</em>.</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '32px' }}>
+            <div style={{ border: '1px solid #252525', padding: '24px', backgroundColor: '#141414' }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#7a7670' }}>01 / INPUT</span>
+              <h3 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '24px', margin: '12px 0', fontWeight: 400 }}>Dump the Process</h3>
+              <p style={{ color: '#b0ada6', fontSize: '14px' }}>Paste raw Slack playbooks, documentation fragments, or messy workflows directly into the analyser.</p>
             </div>
-            <div className="font-mono text-[11px] text-right md:self-start">
-              <div className="text-[#b0ada6] tracking-wider">USAGE: {usageCount} / 2 FREE ANALYSES</div>
-              <div className="flex gap-1.5 mt-2 justify-end">
-                <div className={`w-4 h-1.5 border border-[#333] ${usageCount >= 1 ? 'bg-[#c8f135] border-[#c8f135]' : ''}`} />
-                <div className={`w-4 h-1.5 border border-[#333] ${usageCount >= 2 ? 'bg-[#c8f135] border-[#c8f135]' : ''}`} />
+            <div style={{ border: '1px solid #252525', padding: '24px', backgroundColor: '#141414' }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#7a7670' }}>02 / INTERPRET</span>
+              <h3 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '24px', margin: '12px 0', fontWeight: 400 }}>Isolate Friction</h3>
+              <p style={{ color: '#b0ada6', fontSize: '14px' }}>The system processes data silos, counts hazardous handoffs, and traces real root causes.</p>
+            </div>
+            <div style={{ border: '1px solid #252525', padding: '24px', backgroundColor: '#141414' }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#7a7670' }}>03 / EXECUTE</span>
+              <h3 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '24px', margin: '12px 0', fontWeight: 400 }}>Sequence Action</h3>
+              <p style={{ color: '#b0ada6', fontSize: '14px' }}>Get an instant executive summary alongside a fully structured roadmap engineered for automation.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Workspace App Layout Section */}
+      <section id="tool" style={{ padding: '100px 0', backgroundColor: '#141414', borderBottom: '1px solid #252525' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '48px', gap: '24px', flexWrap: 'wrap' }}>
+            <div>
+              <h2 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '36px', fontWeight: 400, marginBottom: '8px' }}>Run Process Diagnosis</h2>
+              <p style={{ color: '#7a7670', fontSize: '14px' }}>Analyze workflow structures and isolate automation opportunities instantly.</p>
+            </div>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', textAlign: 'right' }}>
+              <div style={{ color: '#b0ada6', letterSpacing: '1px' }}>USAGE: {usageCount} / 2 FREE ANALYSES</div>
+              <div style={{ display: 'flex', gap: '6px', marginTop: '8px', justifyContent: 'flex-end' }}>
+                <Pip used={usageCount >= 1} locked={false} />
+                <Pip used={usageCount >= 2} locked={false} />
+                <Pip used={false} locked={true} />
               </div>
             </div>
           </div>
 
-          {/* Core Text Input Frame */}
-          <div className="mb-6">
+          <div style={{ marginBottom: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '12px', color: '#7a7670', fontFamily: "'JetBrains Mono', monospace" }}>
+              <span>Paste Business Process Description</span>
+              <span>{processText.length} chars</span>
+            </div>
             <textarea
-              placeholder="e.g., When a merchant completes registration, the operations lead manually pulls data from the portal into a local spreadsheet, sending manual Slack updates..."
+              placeholder="e.g., When a new merchant signs up via the website, the sales ops lead manually copies their data into an Excel sheet..."
               value={processText}
               onChange={(e) => setProcessText(e.target.value)}
-              disabled={loading}
-              className="w-full h-60 bg-[#1a1a1a] border border-[#252525] focus:border-[#333] p-5 text-[#f0ede6] text-base font-sans resize-y outline-none transition-colors duration-200"
+              disabled={loading || showGate}
+              style={{ width: '100%', height: '240px', backgroundColor: '#1a1a1a', border: '1px solid #252525', padding: '20px', color: '#f0ede6', fontSize: '15px', resize: 'vertical', outline: 'none', fontFamily: 'inherit', lineHeight: '1.6' }}
             />
           </div>
 
-          <div className="flex justify-end">
+          {error && <div style={{ color: '#c8f135', fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', marginTop: '12px', marginBottom: '12px' }}>{error}</div>}
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+            <span style={{ fontSize: '12px', color: '#7a7670', fontFamily: "'JetBrains Mono', monospace" }}>Minimum 30 characters required for clinical rigor.</span>
             <button
               onClick={runDiagnosis}
-              disabled={loading || !processText.trim()}
-              className="bg-transparent text-[#c8f135] border border-[#c8f135] hover:bg-[#c8f135] hover:text-black disabled:border-[#252525] disabled:text-[#7a7670] disabled:hover:bg-transparent px-7 py-3.5 font-mono text-sm font-medium transition-all duration-200 cursor-pointer disabled:cursor-not-allowed"
+              disabled={loading || showGate || !processText.trim()}
+              style={{ backgroundColor: 'transparent', color: (loading || showGate || !processText.trim()) ? '#7a7670' : '#c8f135', border: '1px solid', borderColor: (loading || showGate || !processText.trim()) ? '#252525' : '#c8f135', padding: '14px 28px', fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 500, cursor: (loading || showGate || !processText.trim()) ? 'not-allowed' : 'pointer', transition: 'all 0.2s ease' }}
             >
               {loading ? 'Analyzing...' : 'Execute Analysis →'}
             </button>
           </div>
 
-          {/* Production Progress Bar Monitor */}
           {loading && (
-            <div className="mt-8">
-              <div className="w-full h-[2px] bg-[#252525] overflow-hidden">
-                <div 
-                  className="h-full bg-[#c8f135] transition-all duration-500 cubic-bezier(0.1, 0.8, 0.2, 1)" 
-                  style={{ width: `${loadProgress}%` }}
-                />
+            <div style={{ marginTop: '24px' }}>
+              <div style={{ width: '100%', height: '2px', backgroundColor: '#252525', overflow: 'hidden' }}>
+                <div style={{ height: '100%', backgroundColor: '#c8f135', width: `${loadProgress}%`, transition: 'width 0.4s ease' }} />
               </div>
-              <div className="font-mono text-[11px] text-[#b0ada6] mt-3.5 uppercase tracking-wider flex items-center gap-2">
-                <span className="text-[#c8f135] animate-pulse">●</span> {loadStatus}
-              </div>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#b0ada6', marginTop: '10px' }}>● {loadStatus}</div>
+                </div>
+              )}
+              
+              {showGate && (
+                <div style={{ marginTop: '24px', padding: '32px', border: '1px dashed #444', backgroundColor: '#1a1a1a', textAlign: 'center' }}>
+                  <p style={{ fontFamily: 'monospace', fontSize: '13px', color: '#b0ada6', marginBottom: '16px' }}>
+                    Maximum free tier diagnoses achieved. Authenticate to scale workflow auditing deep analysis.
+                  </p>
+                  <button style={{ backgroundColor: '#c8f135', color: '#000', border: 'none', padding: '10px 20px', fontFamily: 'monospace', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>
+                    Sign In to Umbrella Suite
+                  </button>
+                </div>
+              )}
+
+              {result && (
+                <div ref={outputRef} style={{ marginTop: '40px', borderTop: '1px solid #252525', paddingTop: '40px' }}>
+                  <div style={{ padding: '24px', border: '1px solid #252525', backgroundColor: '#141414', marginBottom: '24px' }}>
+                    <div style={{ fontFamily: 'monospace', fontSize: '11px', textTransform: 'uppercase', color: '#c8f135', marginBottom: '8px' }}>
+                      Diagnostic Readout // Executive Summary
+                    </div>
+                    <p style={{ color: '#b0ada6', fontSize: '14px', lineHeight: '1.6' }}>
+                      Process diagnostic processing complete. System parameters matched operational anomalies inside layout pipeline layers.
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+          </section>
+
+          {/* Footer Layout Frame Component */}
+          <footer style={{ borderTop: '1px solid #252525', padding: '40px 0', backgroundColor: '#0f0f0f' }}>
+            <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', fontWeight: 600 }}>UMBRELLA <span style={{ color: '#7a7670' }}>/</span> PIS</div>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#7a7670' }}>© 2026 UMBRELLA. ALL RIGHTS RESERVED.</div>
+            </div>
+          </footer>
         </div>
-      </section>
-    </div>
-  );
-}
+      );
+    }
