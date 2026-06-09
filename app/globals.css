@@ -1,50 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400;500;700&display=swap');
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* Core Canvas Reset matching the Umbrella Architecture */
-body {
-  background-color: #0f0f0f;
-  color: #f0ede6;
-  font-family: 'JetBrains Mono', monospace;
+*, *::before, *::after {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  -webkit-font-smoothing: antialiased;
 }
 
-/* Core Brand Font Families */
-.font-display-serif {
-  font-family: 'Instrument Serif', Georgia, serif;
-}
-
-.font-mono-system {
-  font-family: 'JetBrains Mono', monospace;
-}
-
-/* Enforcing Sharp Geometry across all layout levels */
-* {
-  border-radius: 0px !important;
-}
-
-/* Global Selection Highlight Pop */
-::selection {
-  background-color: #c8f135;
-  color: #0f0f0f;
-}
-
-/* Clean Input & Data Field Focus Baselines */
-textarea, input {
-  background-color: #141414;
+html, body {
+  background-color: #0f0f0f;
   color: #f0ede6;
-  border: 1px solid #252525;
-  font-family: 'JetBrains Mono', monospace;
-  transition: all 0.2s ease;
-}
-
-textarea:focus, input:focus {
-  outline: none;
-  border-color: #c8f135;
-  background-color: #1a1a1a;
+  font-family: system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
 }
