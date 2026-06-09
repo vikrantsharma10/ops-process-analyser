@@ -133,16 +133,14 @@ export default function App() {
 
           <div style={{ flex: "1 1 380px", display: "flex", flexDirection: "column", gap: "16px" }}>
             {showGate && <LoginGate />}
-            {result && !loading && (
-              <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                <ResultBlock label="Executive Summary" accent="#DDF7A8">
-                  Diagnostic complete. Operational anomalies identified within the process pipeline. Key friction points mapped across handoff boundaries and data flow layers.
-                </ResultBlock>
-                <ResultBlock label="Granular Breakdown" accent="#D8BEF7">
-                  Full analysis sequenced. Mitigation roadmap assigned. Sign in to view ownership maps, bottleneck scores, and recommended next steps.
-                </ResultBlock>
-              </div>
-            )}
+           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+  <ResultBlock label="Executive Summary" accent="#DDF7A8">
+    Diagnostic complete. Operational anomalies identified within the process pipeline. Key friction points mapped across handoff boundaries and data flow layers.
+  </ResultBlock>
+  <ResultBlock label="Granular Breakdown" accent="#D8BEF7">
+    Full analysis sequenced. Mitigation roadmap assigned. Sign in to view ownership maps, bottleneck scores, and recommended next steps.
+  </ResultBlock>
+</div>
             {loading && (
               <div style={{ border: "1px solid #E6E1DA", borderRadius: "8px", padding: "28px", backgroundColor: "#FAF8F3" }}>
                 <div style={{ width: "100%", height: "3px", backgroundColor: "#E6E1DA", borderRadius: "2px", overflow: "hidden", marginBottom: "14px" }}>
