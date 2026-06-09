@@ -1,40 +1,23 @@
-import type { Metadata } from 'next';
-import { Instrument_Serif, Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 
-const instrumentSerif = Instrument_Serif({
-  weight: ['400'],
-  style: ['normal', 'italic'],
-  subsets: ['latin'],
-  variable: '--font-display',
-});
-
-const inter = Inter({
-  weight: ['300', '400', '500', '600'],
-  subsets: ['latin'],
-  variable: '--font-body',
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  weight: ['400', '500', '600'],
-  subsets: ['latin'],
-  variable: '--font-mono',
-});
-
-export const metadata: Metadata = {
+export const metadata = {
   title: 'Ops Process Analyser — Process Intelligence Suite',
-  description:
-    'Diagnose the process, not the people. Instant AI breakdown of manual vs automated ratio, health score, handoff risks, root causes and sequenced actions.',
+  description: 'Isolate operations friction instantly.',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
-      <body
-        className={`${instrumentSerif.variable} ${inter.variable} ${jetbrainsMono.variable}`}
-      >
-        {children}
-      </body>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+      </head>
+      <body>{children}</body>
     </html>
   );
 }
