@@ -1,10 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400;500;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Core Reset & High-Contrast Dark Mode Baseline */
+/* Core Canvas Reset matching the Umbrella Architecture */
 body {
   background-color: #0f0f0f;
   color: #f0ede6;
@@ -14,53 +14,37 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Custom Typography Utility Overrides */
-.font-serif-display {
-  font-family: 'Instrument+Serif', Georgia, serif;
-  letter-spacing: -0.02em;
-  line-height: 1.05;
+/* Core Brand Font Families */
+.font-display-serif {
+  font-family: 'Instrument Serif', Georgia, serif;
 }
 
-.font-mono-interface {
+.font-mono-system {
   font-family: 'JetBrains Mono', monospace;
 }
 
-/* Enforcing Umbrella Brand Elements Globals */
+/* Enforcing Sharp Geometry across all layout levels */
 * {
-  border-radius: 0px !important; /* Strictly rejects rounded corners */
+  border-radius: 0px !important;
 }
 
-/* Custom Selection Highlight using Volt Lime Green */
+/* Global Selection Highlight Pop */
 ::selection {
   background-color: #c8f135;
   color: #0f0f0f;
 }
 
-/* Global Form Component Defaults to prevent raw unstyled defaults */
-input, textarea, select {
+/* Clean Input & Data Field Focus Baselines */
+textarea, input {
   background-color: #141414;
   color: #f0ede6;
   border: 1px solid #252525;
-  padding: 12px;
   font-family: 'JetBrains Mono', monospace;
-  transition: border-color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
-input:focus, textarea:focus {
+textarea:focus, input:focus {
   outline: none;
   border-color: #c8f135;
-}
-
-/* Custom Scrollbar to match dark aesthetic */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #0f0f0f;
-}
-::-webkit-scrollbar-thumb {
-  background: #252525;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #c8f135;
+  background-color: #1a1a1a;
 }
