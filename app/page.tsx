@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 
-// ── Change this URL to match whatever "Book a strategy call" links to on coveredbyumbrella.com ──
 const BOOK_A_CALL_URL = "https://coveredbyumbrella.com/#book";
 
 function Pip({ used, locked }: { used: boolean; locked: boolean }) {
@@ -37,19 +36,18 @@ function LoginGate() {
       }}>
         You've used your free diagnostic runs. Sign in to keep going.
       </p>
-      <button style={{
-        backgroundColor: '#0B0B0B',
-        color: '#FAF8F3',
-        border: 'none',
-        padding: '12px 28px',
-        fontFamily: "'DM Sans', sans-serif",
-        fontSize: '14px',
-        fontWeight: 500,
-        cursor: 'pointer',
-        borderRadius: '6px',
-      }}
-        onMouseEnter={e => (e.currentTarget.style.opacity = '0.8')}
-        onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+      <button
+        style={{
+          backgroundColor: '#0B0B0B',
+          color: '#FAF8F3',
+          border: 'none',
+          padding: '12px 28px',
+          fontFamily: "'DM Sans', sans-serif",
+          fontSize: '14px',
+          fontWeight: 500,
+          cursor: 'pointer',
+          borderRadius: '6px',
+        }}
       >
         Sign in to Umbrella →
       </button>
@@ -77,7 +75,7 @@ function ResultBlock({ label, accent, children }: { label: string; accent: strin
         fontSize: '11px',
         fontWeight: 600,
         letterSpacing: '0.05em',
-        textTransform: 'uppercase',
+        textTransform: 'uppercase' as const,
         marginBottom: '14px',
       }}>
         {label}
@@ -98,8 +96,6 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [showGate, setShowGate] = useState(false);
   const [result, setResult] = useState<{ status: string } | null>(null);
-
-  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     const savedUsage = localStorage.getItem('opa_usage');
@@ -132,16 +128,19 @@ export default function App() {
   const btnDisabled = loading || showGate || !processText.trim();
 
   return (
-    <div className="dot-pattern" style={{
-      backgroundColor: '#FAF8F3',
-      color: '#0B0B0B',
-      minHeight: '100vh',
-      width: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-    }}>
+    <div
+      className="dot-pattern"
+      style={{
+        backgroundColor: '#FAF8F3',
+        color: '#0B0B0B',
+        minHeight: '100vh',
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
 
-      {/* ── Nav ── */}
+      {/* Nav */}
       <nav style={{
         position: 'sticky',
         top: 0,
@@ -176,7 +175,6 @@ export default function App() {
             }}>Umbrella</span>
           </a>
 
-          {/* Nav right: suite label + book a call */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
             <div style={{
               fontFamily: "'DM Sans', sans-serif",
@@ -197,11 +195,8 @@ export default function App() {
                 fontSize: '13px',
                 fontWeight: 500,
                 textDecoration: 'none',
-                whiteSpace: 'nowrap',
-                transition: 'opacity 0.2s ease',
+                whiteSpace: 'nowrap' as const,
               }}
-              onMouseEnter={e => (e.currentTarget.style.opacity = '0.8')}
-              onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
             >
               Book a strategy call
             </a>
@@ -209,7 +204,7 @@ export default function App() {
         </div>
       </nav>
 
-      {/* ── Main content ── */}
+      {/* Main */}
       <div style={{
         flex: 1,
         maxWidth: '1200px',
@@ -221,7 +216,7 @@ export default function App() {
         gap: '48px',
       }}>
 
-        {/* ── Top row: info left, results right ── */}
+        {/* Top row */}
         <div style={{
           display: 'flex',
           gap: '64px',
@@ -248,7 +243,7 @@ export default function App() {
               fontSize: '11px',
               fontWeight: 600,
               letterSpacing: '0.1em',
-              textTransform: 'uppercase',
+              textTransform: 'uppercase' as const,
             }}>
               AI-OPS Diagnostic Tool
             </div>
@@ -277,7 +272,6 @@ export default function App() {
               Isolate operational friction, score system integrity, and map ownership boundaries. Paste your process documentation; get a clinical breakdown back.
             </p>
 
-            {/* Usage tracker */}
             <div style={{
               border: '1px solid #E6E1DA',
               backgroundColor: '#FAF8F3',
@@ -316,10 +310,7 @@ export default function App() {
                 fontWeight: 500,
                 color: '#7a7670',
                 textDecoration: 'none',
-                transition: 'color 0.2s ease',
               }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#0B0B0B')}
-              onMouseLeave={e => (e.currentTarget.style.color = '#7a7670')}
             >
               ← Back to Umbrella
             </a>
@@ -336,10 +327,10 @@ export default function App() {
 
             {result && !loading ? (
               <>
-                <ResultBlock label="Executive Summary" accent="#DDF7A8" textColor="#3a6b1a">
+                <ResultBlock label="Executive Summary" accent="#DDF7A8">
                   Diagnostic complete. Operational anomalies identified within the process pipeline. Key friction points mapped across handoff boundaries and data flow layers.
                 </ResultBlock>
-                <ResultBlock label="Granular Breakdown" accent="#D8BEF7" textColor="#4a2d7a">
+                <ResultBlock label="Granular Breakdown" accent="#D8BEF7">
                   Full analysis sequenced. Mitigation roadmap assigned to your account. Sign in to view ownership maps, bottleneck scores, and recommended next steps.
                 </ResultBlock>
               </>
@@ -350,10 +341,10 @@ export default function App() {
                   borderRadius: '8px',
                   padding: '48px 40px',
                   textAlign: 'center',
-                  height: '100%',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  minHeight: '160px',
                 }}>
                   <span style={{
                     fontFamily: "'DM Sans', sans-serif",
@@ -403,7 +394,7 @@ export default function App() {
           </div>
         </div>
 
-        {/* ── Bottom: full-width textarea ── */}
+        {/* Bottom: full-width textarea */}
         <div style={{
           border: '1px solid #E6E1DA',
           backgroundColor: '#FAF8F3',
@@ -435,7 +426,6 @@ export default function App() {
           </div>
 
           <textarea
-            ref={inputRef}
             placeholder="Describe your operational process in detail — team handoffs, tools used, approval chains, where bottlenecks appear, what gets dropped, and where ownership gets blurry. The more context you give, the sharper the diagnosis."
             value={processText}
             onChange={(e) => setProcessText(e.target.value)}
@@ -453,10 +443,7 @@ export default function App() {
               outline: 'none',
               fontFamily: "'DM Sans', sans-serif",
               lineHeight: '1.7',
-              transition: 'border-color 0.2s ease',
             }}
-            onFocus={e => (e.currentTarget.style.borderColor = '#0B0B0B')}
-            onBlur={e => (e.currentTarget.style.borderColor = '#E6E1DA')}
           />
 
           {error && (
@@ -497,10 +484,7 @@ export default function App() {
                 fontWeight: 500,
                 cursor: btnDisabled ? 'not-allowed' : 'pointer',
                 borderRadius: '6px',
-                transition: 'all 0.2s ease',
               }}
-              onMouseEnter={e => { if (!btnDisabled) e.currentTarget.style.opacity = '0.8'; }}
-              onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
             >
               {loading ? 'Analysing...' : 'Run Diagnosis →'}
             </button>
@@ -509,7 +493,7 @@ export default function App() {
 
       </div>
 
-      {/* ── Footer ── */}
+      {/* Footer */}
       <footer style={{
         borderTop: '1px solid #E6E1DA',
         backgroundColor: '#FAF8F3',
@@ -543,10 +527,7 @@ export default function App() {
               textDecoration: 'none',
               borderBottom: '1px solid #E6E1DA',
               paddingBottom: '1px',
-              transition: 'border-color 0.2s ease',
             }}
-            onMouseEnter={e => (e.currentTarget.style.borderColor = '#0B0B0B')}
-            onMouseLeave={e => (e.currentTarget.style.borderColor = '#E6E1DA')}
           >
             Book a strategy call →
           </a>
